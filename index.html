@@ -1,0 +1,653 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>LeadDesk — Premium Trading Leads</title>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Mono:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #08090c;
+    --surface: #0f1117;
+    --surface2: #161922;
+    --border: rgba(255,255,255,0.07);
+    --accent: #00e5a0;
+    --accent2: #0af;
+    --warn: #ff6b35;
+    --text: #f0f2f7;
+    --muted: #5a6070;
+    --muted2: #8892a4;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'DM Mono', monospace;
+    min-height: 100vh;
+    overflow-x: hidden;
+  }
+
+  /* Grain overlay */
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 512 512' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.75' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.04'/%3E%3C/svg%3E");
+    pointer-events: none;
+    z-index: 0;
+    opacity: 0.4;
+  }
+
+  /* Ambient glow */
+  body::after {
+    content: '';
+    position: fixed;
+    top: -200px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 600px;
+    height: 400px;
+    background: radial-gradient(ellipse, rgba(0,229,160,0.07) 0%, transparent 70%);
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  .wrap {
+    position: relative;
+    z-index: 1;
+    max-width: 480px;
+    margin: 0 auto;
+    padding: 0 0 100px;
+  }
+
+  /* ── HEADER ── */
+  header {
+    padding: 28px 20px 0;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+
+  .logo {
+    font-family: 'Syne', sans-serif;
+    font-weight: 800;
+    font-size: 18px;
+    letter-spacing: -0.5px;
+    color: var(--text);
+  }
+  .logo span { color: var(--accent); }
+
+  .status-pill {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    background: rgba(0,229,160,0.08);
+    border: 1px solid rgba(0,229,160,0.2);
+    border-radius: 20px;
+    padding: 5px 12px;
+    font-size: 11px;
+    color: var(--accent);
+    letter-spacing: 0.5px;
+  }
+  .status-pill .dot {
+    width: 6px; height: 6px;
+    border-radius: 50%;
+    background: var(--accent);
+    animation: pulse 2s infinite;
+  }
+  @keyframes pulse {
+    0%, 100% { opacity: 1; transform: scale(1); }
+    50% { opacity: 0.4; transform: scale(0.8); }
+  }
+
+  /* ── HERO ── */
+  .hero {
+    padding: 36px 20px 28px;
+    border-bottom: 1px solid var(--border);
+  }
+
+  .eyebrow {
+    font-size: 10px;
+    letter-spacing: 2px;
+    color: var(--muted2);
+    text-transform: uppercase;
+    margin-bottom: 12px;
+  }
+
+  h1 {
+    font-family: 'Syne', sans-serif;
+    font-size: 32px;
+    font-weight: 800;
+    line-height: 1.1;
+    letter-spacing: -1px;
+    margin-bottom: 14px;
+  }
+  h1 em {
+    font-style: normal;
+    color: var(--accent);
+  }
+
+  .hero-sub {
+    font-size: 13px;
+    color: var(--muted2);
+    line-height: 1.7;
+    max-width: 340px;
+  }
+
+  .hero-stats {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 10px;
+    margin-top: 28px;
+  }
+
+  .stat {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 14px 12px;
+    text-align: center;
+  }
+  .stat-val {
+    font-family: 'Syne', sans-serif;
+    font-size: 20px;
+    font-weight: 700;
+    color: var(--accent);
+    line-height: 1;
+    margin-bottom: 4px;
+  }
+  .stat-label {
+    font-size: 10px;
+    color: var(--muted);
+    letter-spacing: 0.5px;
+  }
+
+  /* ── SECTIONS ── */
+  section {
+    padding: 28px 20px;
+    border-bottom: 1px solid var(--border);
+  }
+
+  .sec-label {
+    font-size: 10px;
+    letter-spacing: 2px;
+    color: var(--muted);
+    text-transform: uppercase;
+    margin-bottom: 16px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+  .sec-label::after {
+    content: '';
+    flex: 1;
+    height: 1px;
+    background: var(--border);
+  }
+
+  /* ── WHAT YOU GET ── */
+  .features {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+
+  .feature-row {
+    display: flex;
+    align-items: flex-start;
+    gap: 14px;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 14px 16px;
+    transition: border-color 0.2s;
+  }
+  .feature-row:hover { border-color: rgba(0,229,160,0.25); }
+
+  .feat-icon {
+    width: 32px; height: 32px;
+    border-radius: 8px;
+    background: rgba(0,229,160,0.08);
+    border: 1px solid rgba(0,229,160,0.15);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 14px;
+    flex-shrink: 0;
+    margin-top: 1px;
+  }
+
+  .feat-title {
+    font-family: 'Syne', sans-serif;
+    font-size: 13px;
+    font-weight: 600;
+    margin-bottom: 3px;
+  }
+  .feat-desc {
+    font-size: 11px;
+    color: var(--muted2);
+    line-height: 1.5;
+  }
+
+  /* ── GEO MAP ── */
+  .geo-grid {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+
+  .geo-tag {
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    padding: 7px 12px;
+    font-size: 12px;
+    color: var(--text);
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    transition: all 0.2s;
+  }
+  .geo-tag:hover {
+    border-color: rgba(0,170,255,0.3);
+    color: var(--accent2);
+  }
+  .geo-tag.unavail {
+    opacity: 0.35;
+    text-decoration: line-through;
+    color: var(--muted);
+  }
+  .geo-flag { font-size: 15px; }
+
+  /* ── DATA FIELDS ── */
+  .data-fields {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 8px;
+  }
+
+  .field-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 12px 14px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+  .field-check {
+    color: var(--accent);
+    font-size: 12px;
+    flex-shrink: 0;
+  }
+  .field-name {
+    font-size: 11px;
+    color: var(--muted2);
+  }
+
+  /* ── MODEL ── */
+  .model-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+  }
+
+  .model-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 16px;
+  }
+  .model-card.highlight {
+    border-color: rgba(0,229,160,0.3);
+    background: rgba(0,229,160,0.04);
+  }
+  .model-title {
+    font-family: 'Syne', sans-serif;
+    font-size: 13px;
+    font-weight: 700;
+    margin-bottom: 6px;
+    color: var(--accent);
+  }
+  .model-card:not(.highlight) .model-title { color: var(--accent2); }
+  .model-desc {
+    font-size: 11px;
+    color: var(--muted2);
+    line-height: 1.5;
+  }
+
+  /* ── PAYMENT ── */
+  .payment-row {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    background: var(--surface);
+    border: 1px solid rgba(0,229,160,0.15);
+    border-radius: 10px;
+    padding: 16px;
+    margin-bottom: 10px;
+  }
+  .crypto-icon {
+    width: 36px; height: 36px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, #26a17b, #1a7a5a);
+    display: flex; align-items: center; justify-content: center;
+    font-family: 'Syne', sans-serif;
+    font-size: 10px;
+    font-weight: 800;
+    color: white;
+    flex-shrink: 0;
+  }
+  .crypto-name {
+    font-family: 'Syne', sans-serif;
+    font-size: 14px;
+    font-weight: 700;
+    margin-bottom: 2px;
+  }
+  .crypto-sub { font-size: 11px; color: var(--muted2); }
+
+  .network-tags { display: flex; gap: 6px; margin-top: 6px; }
+  .net-tag {
+    font-size: 10px;
+    background: rgba(255,255,255,0.05);
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    padding: 2px 7px;
+    color: var(--muted2);
+  }
+
+  /* ── CTA ── */
+  .cta-section {
+    padding: 28px 20px;
+  }
+
+  .cta-card {
+    background: linear-gradient(135deg, rgba(0,229,160,0.06), rgba(0,170,255,0.04));
+    border: 1px solid rgba(0,229,160,0.2);
+    border-radius: 16px;
+    padding: 28px 24px;
+    text-align: center;
+  }
+
+  .cta-title {
+    font-family: 'Syne', sans-serif;
+    font-size: 20px;
+    font-weight: 800;
+    margin-bottom: 8px;
+    letter-spacing: -0.5px;
+  }
+  .cta-sub {
+    font-size: 12px;
+    color: var(--muted2);
+    line-height: 1.6;
+    margin-bottom: 24px;
+  }
+
+  .btn-primary {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    width: 100%;
+    background: var(--accent);
+    color: #080c0a;
+    font-family: 'Syne', sans-serif;
+    font-size: 14px;
+    font-weight: 800;
+    letter-spacing: 0.3px;
+    padding: 15px 24px;
+    border-radius: 10px;
+    border: none;
+    cursor: pointer;
+    transition: all 0.2s;
+    text-decoration: none;
+    margin-bottom: 10px;
+  }
+  .btn-primary:hover { background: #00ffb2; transform: translateY(-1px); }
+  .btn-primary:active { transform: translateY(0); }
+
+  .btn-secondary {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    width: 100%;
+    background: transparent;
+    color: var(--muted2);
+    font-family: 'DM Mono', monospace;
+    font-size: 12px;
+    padding: 12px 24px;
+    border-radius: 10px;
+    border: 1px solid var(--border);
+    cursor: pointer;
+    transition: all 0.2s;
+    text-decoration: none;
+  }
+  .btn-secondary:hover { border-color: rgba(255,255,255,0.15); color: var(--text); }
+
+  .disclaimer {
+    font-size: 10px;
+    color: var(--muted);
+    text-align: center;
+    padding: 0 20px;
+    line-height: 1.6;
+    margin-top: 8px;
+  }
+
+  /* ── ANIMATIONS ── */
+  .fade-in {
+    animation: fadeUp 0.5s ease both;
+  }
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(16px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+  .hero { animation-delay: 0s; }
+  section:nth-of-type(1) { animation: fadeUp 0.5s 0.1s ease both; }
+  section:nth-of-type(2) { animation: fadeUp 0.5s 0.15s ease both; }
+  section:nth-of-type(3) { animation: fadeUp 0.5s 0.2s ease both; }
+  section:nth-of-type(4) { animation: fadeUp 0.5s 0.25s ease both; }
+  section:nth-of-type(5) { animation: fadeUp 0.5s 0.3s ease both; }
+
+  /* ticker */
+  .ticker-wrap {
+    overflow: hidden;
+    background: rgba(0,229,160,0.04);
+    border-top: 1px solid rgba(0,229,160,0.1);
+    border-bottom: 1px solid rgba(0,229,160,0.1);
+    padding: 8px 0;
+    margin: 20px 0 0;
+  }
+  .ticker {
+    display: flex;
+    gap: 40px;
+    width: max-content;
+    animation: ticker 20s linear infinite;
+  }
+  @keyframes ticker {
+    from { transform: translateX(0); }
+    to { transform: translateX(-50%); }
+  }
+  .tick-item {
+    font-size: 11px;
+    color: var(--accent);
+    letter-spacing: 1px;
+    white-space: nowrap;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .tick-sep { color: var(--muted); }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <!-- HEADER -->
+  <header class="fade-in">
+    <div class="logo">LEAD<span>DESK</span></div>
+    <div class="status-pill">
+      <span class="dot"></span>
+      LIVE TRAFFIC
+    </div>
+  </header>
+
+  <!-- TICKER -->
+  <div class="ticker-wrap">
+    <div class="ticker">
+      <span class="tick-item">⚡ REAL-TIME REGISTRATIONS <span class="tick-sep">·</span></span>
+      <span class="tick-item">✅ NO BOTS <span class="tick-sep">·</span></span>
+      <span class="tick-item">🌎 EU · UK · ASIA · LATAM · AU <span class="tick-sep">·</span></span>
+      <span class="tick-item">💳 USDT PAYMENTS <span class="tick-sep">·</span></span>
+      <span class="tick-item">📦 SAME-DAY DELIVERY <span class="tick-sep">·</span></span>
+      <span class="tick-item">⚡ REAL-TIME REGISTRATIONS <span class="tick-sep">·</span></span>
+      <span class="tick-item">✅ NO BOTS <span class="tick-sep">·</span></span>
+      <span class="tick-item">🌎 EU · UK · ASIA · LATAM · AU <span class="tick-sep">·</span></span>
+      <span class="tick-item">💳 USDT PAYMENTS <span class="tick-sep">·</span></span>
+      <span class="tick-item">📦 SAME-DAY DELIVERY <span class="tick-sep">·</span></span>
+    </div>
+  </div>
+
+  <!-- HERO -->
+  <div class="hero fade-in">
+    <p class="eyebrow">Private Traffic Source</p>
+    <h1>Premium<br><em>Forex & Crypto</em><br>Lead Supply</h1>
+    <p class="hero-sub">Live investor registrations from private funnels. No recycled data. No bots. Ready for monetization.</p>
+    <div class="hero-stats">
+      <div class="stat">
+        <div class="stat-val">0-day</div>
+        <div class="stat-label">Lead Age</div>
+      </div>
+      <div class="stat">
+        <div class="stat-val">6+</div>
+        <div class="stat-label">GEO Regions</div>
+      </div>
+      <div class="stat">
+        <div class="stat-val">CPL</div>
+        <div class="stat-label">CPA Ready</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- WHAT YOU GET -->
+  <section>
+    <div class="sec-label">What you get</div>
+    <div class="features">
+      <div class="feature-row">
+        <div class="feat-icon">⚡</div>
+        <div>
+          <div class="feat-title">Real-Time Registrations</div>
+          <div class="feat-desc">Fresh leads from active funnels. Delivered with timestamp + autologin validation.</div>
+        </div>
+      </div>
+      <div class="feature-row">
+        <div class="feat-icon">🔒</div>
+        <div>
+          <div class="feat-title">Private, Non-Resold Traffic</div>
+          <div class="feat-desc">No aged databases. No incentive traffic. Exclusive supply per partner.</div>
+        </div>
+      </div>
+      <div class="feature-row">
+        <div class="feat-icon">📊</div>
+        <div>
+          <div class="feat-title">Full Tracking Transparency</div>
+          <div class="feat-desc">CRM connection before launch. Funnel source and timestamp on every lead.</div>
+        </div>
+      </div>
+      <div class="feature-row">
+        <div class="feat-icon">📦</div>
+        <div>
+          <div class="feat-title">Same-Day Delivery</div>
+          <div class="feat-desc">No daily caps. Volume aligned upfront. Scaling after validation.</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- GEO -->
+  <section>
+    <div class="sec-label">Available GEOs</div>
+    <div class="geo-grid">
+      <div class="geo-tag"><span class="geo-flag">🇪🇺</span> Europe</div>
+      <div class="geo-tag"><span class="geo-flag">🇬🇧</span> United Kingdom</div>
+      <div class="geo-tag"><span class="geo-flag">🌏</span> Asia</div>
+      <div class="geo-tag"><span class="geo-flag">🌎</span> LATAM</div>
+      <div class="geo-tag"><span class="geo-flag">🇦🇺</span> Australia</div>
+      <div class="geo-tag"><span class="geo-flag">🌍</span> Tier-2 / Tier-3</div>
+      <div class="geo-tag unavail"><span class="geo-flag">🇩🇪</span> Germany ✗</div>
+    </div>
+  </section>
+
+  <!-- DATA FIELDS -->
+  <section>
+    <div class="sec-label">Lead data included</div>
+    <div class="data-fields">
+      <div class="field-card"><span class="field-check">✔</span><span class="field-name">Full Name</span></div>
+      <div class="field-card"><span class="field-check">✔</span><span class="field-name">Phone Number</span></div>
+      <div class="field-card"><span class="field-check">✔</span><span class="field-name">Email Address</span></div>
+      <div class="field-card"><span class="field-check">✔</span><span class="field-name">GEO / Country</span></div>
+      <div class="field-card"><span class="field-check">✔</span><span class="field-name">Reg. Timestamp</span></div>
+      <div class="field-card"><span class="field-check">✔</span><span class="field-name">Funnel Source</span></div>
+      <div class="field-card"><span class="field-check">✔</span><span class="field-name">Autologin Link</span></div>
+      <div class="field-card"><span class="field-check">✔</span><span class="field-name">Validation Status</span></div>
+    </div>
+  </section>
+
+  <!-- COOPERATION MODEL -->
+  <section>
+    <div class="sec-label">Cooperation model</div>
+    <div class="model-grid">
+      <div class="model-card highlight">
+        <div class="model-title">CPL</div>
+        <div class="model-desc">Cost per lead. Pay per validated registration delivered.</div>
+      </div>
+      <div class="model-card">
+        <div class="model-title">CPA</div>
+        <div class="model-desc">Cost per action. Performance-based on deposit conversions.</div>
+      </div>
+      <div class="model-card">
+        <div class="model-title">CRG</div>
+        <div class="model-desc">Cost per revenue generated. Rev-share hybrid model.</div>
+      </div>
+      <div class="model-card">
+        <div class="model-title">Test Vol.</div>
+        <div class="model-desc">Start small, validate quality, then scale with no caps.</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- PAYMENT -->
+  <section>
+    <div class="sec-label">Payment</div>
+    <div class="payment-row">
+      <div class="crypto-icon">USDT</div>
+      <div>
+        <div class="crypto-name">Tether (USDT)</div>
+        <div class="crypto-sub">Prepay for first launch. Flexible structure for proven performers.</div>
+        <div class="network-tags">
+          <span class="net-tag">TRC20</span>
+          <span class="net-tag">ERC20</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- CTA -->
+  <div class="cta-section">
+    <div class="cta-card">
+      <div class="cta-title">Ready to Start?</div>
+      <p class="cta-sub">Limited partner slots available. DM to discuss GEO, volume, pricing, and test launch terms.</p>
+      <a href="https://t.me/peon773" class="btn-primary">
+        ✉ Contact on Telegram
+      </a>
+      <a href="#" class="btn-secondary" onclick="return false;">
+        📋 Request Rate Card
+      </a>
+    </div>
+  </div>
+
+  <p class="disclaimer">Pricing is performance-based and depends on GEO, volume, and exclusivity. No public rate cards. All traffic is verified at source.</p>
+
+</div>
+</body>
+</html>
