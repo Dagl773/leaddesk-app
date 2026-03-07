@@ -3,7 +3,8 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-<title>LeadDesk — Premium Trading Leads</title>
+<title>LeadDesk — Onboarding</title>
+<script src="https://telegram.org/js/telegram-web-app.js"></script>
 <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Mono:wght@300;400;500&display=swap" rel="stylesheet">
 <style>
   :root {
@@ -13,641 +14,424 @@
     --border: rgba(255,255,255,0.07);
     --accent: #00e5a0;
     --accent2: #0af;
-    --warn: #ff6b35;
     --text: #f0f2f7;
     --muted: #5a6070;
     --muted2: #8892a4;
+    --error: #ff4d4d;
   }
-
-  * { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
-
-  body {
-    background: var(--bg);
-    color: var(--text);
-    font-family: 'DM Mono', monospace;
-    min-height: 100vh;
-    overflow-x: hidden;
-  }
-
-  /* Grain overlay */
-  body::before {
-    content: '';
-    position: fixed;
-    inset: 0;
-    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 512 512' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.75' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.04'/%3E%3C/svg%3E");
-    pointer-events: none;
-    z-index: 0;
-    opacity: 0.4;
-  }
-
-  /* Ambient glow */
-  body::after {
-    content: '';
-    position: fixed;
-    top: -200px;
-    left: 50%;
-    transform: translateX(-50%);
-    width: 600px;
-    height: 400px;
-    background: radial-gradient(ellipse, rgba(0,229,160,0.07) 0%, transparent 70%);
-    pointer-events: none;
-    z-index: 0;
-  }
-
-  .wrap {
-    position: relative;
-    z-index: 1;
-    max-width: 480px;
-    margin: 0 auto;
-    padding: 0 0 100px;
-  }
-
-  /* ── HEADER ── */
-  header {
-    padding: 28px 20px 0;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-  }
-
-  .logo {
-    font-family: 'Syne', sans-serif;
-    font-weight: 800;
-    font-size: 18px;
-    letter-spacing: -0.5px;
-    color: var(--text);
-  }
-  .logo span { color: var(--accent); }
-
-  .status-pill {
-    display: flex;
-    align-items: center;
-    gap: 6px;
-    background: rgba(0,229,160,0.08);
-    border: 1px solid rgba(0,229,160,0.2);
-    border-radius: 20px;
-    padding: 5px 12px;
-    font-size: 11px;
-    color: var(--accent);
-    letter-spacing: 0.5px;
-  }
-  .status-pill .dot {
-    width: 6px; height: 6px;
-    border-radius: 50%;
-    background: var(--accent);
-    animation: pulse 2s infinite;
-  }
-  @keyframes pulse {
-    0%, 100% { opacity: 1; transform: scale(1); }
-    50% { opacity: 0.4; transform: scale(0.8); }
-  }
-
-  /* ── HERO ── */
-  .hero {
-    padding: 36px 20px 28px;
-    border-bottom: 1px solid var(--border);
-  }
-
-  .eyebrow {
-    font-size: 10px;
-    letter-spacing: 2px;
-    color: var(--muted2);
-    text-transform: uppercase;
-    margin-bottom: 12px;
-  }
-
-  h1 {
-    font-family: 'Syne', sans-serif;
-    font-size: 32px;
-    font-weight: 800;
-    line-height: 1.1;
-    letter-spacing: -1px;
-    margin-bottom: 14px;
-  }
-  h1 em {
-    font-style: normal;
-    color: var(--accent);
-  }
-
-  .hero-sub {
-    font-size: 13px;
-    color: var(--muted2);
-    line-height: 1.7;
-    max-width: 340px;
-  }
-
-  .hero-stats {
-    display: grid;
-    grid-template-columns: repeat(3, 1fr);
-    gap: 10px;
-    margin-top: 28px;
-  }
-
-  .stat {
-    background: var(--surface);
-    border: 1px solid var(--border);
-    border-radius: 10px;
-    padding: 14px 12px;
-    text-align: center;
-  }
-  .stat-val {
-    font-family: 'Syne', sans-serif;
-    font-size: 20px;
-    font-weight: 700;
-    color: var(--accent);
-    line-height: 1;
-    margin-bottom: 4px;
-  }
-  .stat-label {
-    font-size: 10px;
-    color: var(--muted);
-    letter-spacing: 0.5px;
-  }
-
-  /* ── SECTIONS ── */
-  section {
-    padding: 28px 20px;
-    border-bottom: 1px solid var(--border);
-  }
-
-  .sec-label {
-    font-size: 10px;
-    letter-spacing: 2px;
-    color: var(--muted);
-    text-transform: uppercase;
-    margin-bottom: 16px;
-    display: flex;
-    align-items: center;
-    gap: 10px;
-  }
-  .sec-label::after {
-    content: '';
-    flex: 1;
-    height: 1px;
-    background: var(--border);
-  }
-
-  /* ── WHAT YOU GET ── */
-  .features {
-    display: flex;
-    flex-direction: column;
-    gap: 10px;
-  }
-
-  .feature-row {
-    display: flex;
-    align-items: flex-start;
-    gap: 14px;
-    background: var(--surface);
-    border: 1px solid var(--border);
-    border-radius: 10px;
-    padding: 14px 16px;
-    transition: border-color 0.2s;
-  }
-  .feature-row:hover { border-color: rgba(0,229,160,0.25); }
-
-  .feat-icon {
-    width: 32px; height: 32px;
-    border-radius: 8px;
-    background: rgba(0,229,160,0.08);
-    border: 1px solid rgba(0,229,160,0.15);
-    display: flex; align-items: center; justify-content: center;
-    font-size: 14px;
-    flex-shrink: 0;
-    margin-top: 1px;
-  }
-
-  .feat-title {
-    font-family: 'Syne', sans-serif;
-    font-size: 13px;
-    font-weight: 600;
-    margin-bottom: 3px;
-  }
-  .feat-desc {
-    font-size: 11px;
-    color: var(--muted2);
-    line-height: 1.5;
-  }
-
-  /* ── GEO MAP ── */
-  .geo-grid {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 8px;
-  }
-
-  .geo-tag {
-    background: var(--surface2);
-    border: 1px solid var(--border);
-    border-radius: 6px;
-    padding: 7px 12px;
-    font-size: 12px;
-    color: var(--text);
-    display: flex;
-    align-items: center;
-    gap: 6px;
-    transition: all 0.2s;
-  }
-  .geo-tag:hover {
-    border-color: rgba(0,170,255,0.3);
-    color: var(--accent2);
-  }
-  .geo-tag.unavail {
-    opacity: 0.35;
-    text-decoration: line-through;
-    color: var(--muted);
-  }
-  .geo-flag { font-size: 15px; }
-
-  /* ── DATA FIELDS ── */
-  .data-fields {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 8px;
-  }
-
-  .field-card {
-    background: var(--surface);
-    border: 1px solid var(--border);
-    border-radius: 8px;
-    padding: 12px 14px;
-    display: flex;
-    align-items: center;
-    gap: 10px;
-  }
-  .field-check {
-    color: var(--accent);
-    font-size: 12px;
-    flex-shrink: 0;
-  }
-  .field-name {
-    font-size: 11px;
-    color: var(--muted2);
-  }
-
-  /* ── MODEL ── */
-  .model-grid {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 10px;
-  }
-
-  .model-card {
-    background: var(--surface);
-    border: 1px solid var(--border);
-    border-radius: 10px;
-    padding: 16px;
-  }
-  .model-card.highlight {
-    border-color: rgba(0,229,160,0.3);
-    background: rgba(0,229,160,0.04);
-  }
-  .model-title {
-    font-family: 'Syne', sans-serif;
-    font-size: 13px;
-    font-weight: 700;
-    margin-bottom: 6px;
-    color: var(--accent);
-  }
-  .model-card:not(.highlight) .model-title { color: var(--accent2); }
-  .model-desc {
-    font-size: 11px;
-    color: var(--muted2);
-    line-height: 1.5;
-  }
-
-  /* ── PAYMENT ── */
-  .payment-row {
-    display: flex;
-    align-items: center;
-    gap: 14px;
-    background: var(--surface);
-    border: 1px solid rgba(0,229,160,0.15);
-    border-radius: 10px;
-    padding: 16px;
-    margin-bottom: 10px;
-  }
-  .crypto-icon {
-    width: 36px; height: 36px;
-    border-radius: 50%;
-    background: linear-gradient(135deg, #26a17b, #1a7a5a);
-    display: flex; align-items: center; justify-content: center;
-    font-family: 'Syne', sans-serif;
-    font-size: 10px;
-    font-weight: 800;
-    color: white;
-    flex-shrink: 0;
-  }
-  .crypto-name {
-    font-family: 'Syne', sans-serif;
-    font-size: 14px;
-    font-weight: 700;
-    margin-bottom: 2px;
-  }
-  .crypto-sub { font-size: 11px; color: var(--muted2); }
-
-  .network-tags { display: flex; gap: 6px; margin-top: 6px; }
-  .net-tag {
-    font-size: 10px;
-    background: rgba(255,255,255,0.05);
-    border: 1px solid var(--border);
-    border-radius: 4px;
-    padding: 2px 7px;
-    color: var(--muted2);
-  }
-
-  /* ── CTA ── */
-  .cta-section {
-    padding: 28px 20px;
-  }
-
-  .cta-card {
-    background: linear-gradient(135deg, rgba(0,229,160,0.06), rgba(0,170,255,0.04));
-    border: 1px solid rgba(0,229,160,0.2);
-    border-radius: 16px;
-    padding: 28px 24px;
-    text-align: center;
-  }
-
-  .cta-title {
-    font-family: 'Syne', sans-serif;
-    font-size: 20px;
-    font-weight: 800;
-    margin-bottom: 8px;
-    letter-spacing: -0.5px;
-  }
-  .cta-sub {
-    font-size: 12px;
-    color: var(--muted2);
-    line-height: 1.6;
-    margin-bottom: 24px;
-  }
-
-  .btn-primary {
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    gap: 8px;
-    width: 100%;
-    background: var(--accent);
-    color: #080c0a;
-    font-family: 'Syne', sans-serif;
-    font-size: 14px;
-    font-weight: 800;
-    letter-spacing: 0.3px;
-    padding: 15px 24px;
-    border-radius: 10px;
-    border: none;
-    cursor: pointer;
-    transition: all 0.2s;
-    text-decoration: none;
-    margin-bottom: 10px;
-  }
-  .btn-primary:hover { background: #00ffb2; transform: translateY(-1px); }
-  .btn-primary:active { transform: translateY(0); }
-
-  .btn-secondary {
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    gap: 8px;
-    width: 100%;
-    background: transparent;
-    color: var(--muted2);
-    font-family: 'DM Mono', monospace;
-    font-size: 12px;
-    padding: 12px 24px;
-    border-radius: 10px;
-    border: 1px solid var(--border);
-    cursor: pointer;
-    transition: all 0.2s;
-    text-decoration: none;
-  }
-  .btn-secondary:hover { border-color: rgba(255,255,255,0.15); color: var(--text); }
-
-  .disclaimer {
-    font-size: 10px;
-    color: var(--muted);
-    text-align: center;
-    padding: 0 20px;
-    line-height: 1.6;
-    margin-top: 8px;
-  }
-
-  /* ── ANIMATIONS ── */
-  .fade-in {
-    animation: fadeUp 0.5s ease both;
-  }
-  @keyframes fadeUp {
-    from { opacity: 0; transform: translateY(16px); }
-    to { opacity: 1; transform: translateY(0); }
-  }
-  .hero { animation-delay: 0s; }
-  section:nth-of-type(1) { animation: fadeUp 0.5s 0.1s ease both; }
-  section:nth-of-type(2) { animation: fadeUp 0.5s 0.15s ease both; }
-  section:nth-of-type(3) { animation: fadeUp 0.5s 0.2s ease both; }
-  section:nth-of-type(4) { animation: fadeUp 0.5s 0.25s ease both; }
-  section:nth-of-type(5) { animation: fadeUp 0.5s 0.3s ease both; }
-
-  /* ticker */
-  .ticker-wrap {
-    overflow: hidden;
-    background: rgba(0,229,160,0.04);
-    border-top: 1px solid rgba(0,229,160,0.1);
-    border-bottom: 1px solid rgba(0,229,160,0.1);
-    padding: 8px 0;
-    margin: 20px 0 0;
-  }
-  .ticker {
-    display: flex;
-    gap: 40px;
-    width: max-content;
-    animation: ticker 20s linear infinite;
-  }
-  @keyframes ticker {
-    from { transform: translateX(0); }
-    to { transform: translateX(-50%); }
-  }
-  .tick-item {
-    font-size: 11px;
-    color: var(--accent);
-    letter-spacing: 1px;
-    white-space: nowrap;
-    display: flex;
-    align-items: center;
-    gap: 8px;
-  }
-  .tick-sep { color: var(--muted); }
+  * { margin:0; padding:0; box-sizing:border-box; -webkit-tap-highlight-color:transparent; }
+  body { background:var(--bg); color:var(--text); font-family:'DM Mono',monospace; min-height:100vh; overflow-x:hidden; }
+  body::before { content:''; position:fixed; top:-200px; left:50%; transform:translateX(-50%); width:600px; height:400px; background:radial-gradient(ellipse, rgba(0,229,160,0.06) 0%, transparent 70%); pointer-events:none; z-index:0; }
+  .wrap { position:relative; z-index:1; max-width:480px; margin:0 auto; padding:0 0 60px; }
+  header { padding:20px 20px 0; display:flex; align-items:center; justify-content:space-between; }
+  .logo { font-family:'Syne',sans-serif; font-weight:800; font-size:17px; letter-spacing:-0.5px; }
+  .logo span { color:var(--accent); }
+  .status-pill { display:flex; align-items:center; gap:6px; background:rgba(0,229,160,0.08); border:1px solid rgba(0,229,160,0.2); border-radius:20px; padding:4px 10px; font-size:10px; color:var(--accent); letter-spacing:0.5px; }
+  .dot { width:6px; height:6px; border-radius:50%; background:var(--accent); animation:pulse 2s infinite; }
+  @keyframes pulse { 0%,100%{opacity:1;transform:scale(1)} 50%{opacity:.4;transform:scale(.8)} }
+  .steps { display:flex; align-items:center; padding:20px 20px 0; }
+  .step-item { display:flex; align-items:center; flex:1; }
+  .step-circle { width:28px; height:28px; border-radius:50%; border:1px solid var(--border); display:flex; align-items:center; justify-content:center; font-size:11px; color:var(--muted); background:var(--surface); transition:all 0.3s; flex-shrink:0; }
+  .step-circle.active { border-color:var(--accent); color:var(--accent); background:rgba(0,229,160,0.08); }
+  .step-circle.done { border-color:var(--accent); background:var(--accent); color:#08090c; font-weight:700; }
+  .step-line { flex:1; height:1px; background:var(--border); transition:background 0.3s; }
+  .step-line.done { background:var(--accent); }
+  .screen { display:none; padding:24px 20px 0; animation:fadeUp 0.35s ease both; }
+  .screen.active { display:block; }
+  @keyframes fadeUp { from{opacity:0;transform:translateY(12px)} to{opacity:1;transform:translateY(0)} }
+  .screen-title { font-family:'Syne',sans-serif; font-size:22px; font-weight:800; letter-spacing:-0.5px; margin-bottom:6px; line-height:1.2; }
+  .screen-title em { font-style:normal; color:var(--accent); }
+  .screen-sub { font-size:12px; color:var(--muted2); line-height:1.6; margin-bottom:24px; }
+  .offer-cards { display:flex; flex-direction:column; gap:10px; margin-bottom:20px; }
+  .offer-card { background:var(--surface); border:1px solid var(--border); border-radius:12px; padding:16px; display:flex; gap:14px; align-items:flex-start; }
+  .offer-icon { width:36px; height:36px; border-radius:9px; background:rgba(0,229,160,0.08); border:1px solid rgba(0,229,160,0.15); display:flex; align-items:center; justify-content:center; font-size:16px; flex-shrink:0; }
+  .offer-title { font-family:'Syne',sans-serif; font-size:13px; font-weight:700; margin-bottom:3px; }
+  .offer-desc { font-size:11px; color:var(--muted2); line-height:1.5; }
+  .geo-wrap { display:flex; flex-wrap:wrap; gap:6px; margin-top:8px; }
+  .geo-chip { background:var(--surface2); border:1px solid var(--border); border-radius:5px; padding:4px 10px; font-size:11px; color:var(--muted2); }
+  .geo-chip.na { text-decoration:line-through; opacity:0.35; }
+  .field { margin-bottom:16px; }
+  .field-label { font-size:10px; letter-spacing:1.5px; color:var(--muted2); text-transform:uppercase; margin-bottom:8px; display:block; }
+  .field-label .req { color:var(--accent); margin-left:2px; }
+  input[type=text], textarea, select { width:100%; background:var(--surface); border:1px solid var(--border); border-radius:8px; padding:12px 14px; color:var(--text); font-family:'DM Mono',monospace; font-size:13px; outline:none; transition:border-color 0.2s; -webkit-appearance:none; appearance:none; }
+  input:focus, textarea:focus, select:focus { border-color:rgba(0,229,160,0.4); }
+  textarea { resize:none; min-height:80px; line-height:1.6; }
+  select { background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%235a6070' stroke-width='1.5' fill='none' stroke-linecap='round'/%3E%3C/svg%3E"); background-repeat:no-repeat; background-position:right 14px center; padding-right:36px; }
+  select option { background:#0f1117; }
+  .field-error { font-size:11px; color:var(--error); margin-top:5px; display:none; }
+  .check-grid { display:grid; grid-template-columns:1fr 1fr; gap:8px; }
+  .check-item { background:var(--surface); border:1px solid var(--border); border-radius:8px; padding:10px 12px; display:flex; align-items:center; gap:10px; cursor:pointer; transition:all 0.2s; user-select:none; }
+  .check-item:hover { border-color:rgba(0,229,160,0.2); }
+  .check-item.selected { border-color:rgba(0,229,160,0.4); background:rgba(0,229,160,0.05); }
+  .check-box { width:18px; height:18px; border-radius:4px; border:1px solid var(--border); background:var(--surface2); display:flex; align-items:center; justify-content:center; font-size:10px; flex-shrink:0; transition:all 0.2s; }
+  .check-item.selected .check-box { background:var(--accent); border-color:var(--accent); color:#08090c; }
+  .check-label { font-size:12px; color:var(--muted2); transition:color 0.2s; }
+  .check-item.selected .check-label { color:var(--text); }
+  .radio-group { display:flex; flex-direction:column; gap:8px; }
+  .radio-item { background:var(--surface); border:1px solid var(--border); border-radius:8px; padding:12px 14px; display:flex; align-items:center; gap:12px; cursor:pointer; transition:all 0.2s; user-select:none; }
+  .radio-item:hover { border-color:rgba(0,229,160,0.2); }
+  .radio-item.selected { border-color:rgba(0,229,160,0.4); background:rgba(0,229,160,0.05); }
+  .radio-dot { width:18px; height:18px; border-radius:50%; border:1px solid var(--border); background:var(--surface2); display:flex; align-items:center; justify-content:center; flex-shrink:0; transition:all 0.2s; }
+  .radio-dot-inner { width:8px; height:8px; border-radius:50%; background:var(--accent); display:none; }
+  .radio-item.selected .radio-dot { border-color:var(--accent); }
+  .radio-item.selected .radio-dot-inner { display:block; }
+  .radio-text { flex:1; }
+  .radio-title { font-size:13px; color:var(--text); margin-bottom:2px; }
+  .radio-desc { font-size:11px; color:var(--muted); }
+  .volume-display { background:var(--surface); border:1px solid rgba(0,229,160,0.2); border-radius:8px; padding:12px 16px; text-align:center; margin-bottom:12px; }
+  .volume-val { font-family:'Syne',sans-serif; font-size:28px; font-weight:800; color:var(--accent); line-height:1; margin-bottom:4px; }
+  .volume-unit { font-size:11px; color:var(--muted2); }
+  input[type=range] { width:100%; -webkit-appearance:none; appearance:none; height:4px; background:var(--surface2); border-radius:2px; outline:none; border:none; padding:0; }
+  input[type=range]::-webkit-slider-thumb { -webkit-appearance:none; width:20px; height:20px; border-radius:50%; background:var(--accent); cursor:pointer; border:2px solid var(--bg); }
+  .summary-box { background:var(--surface); border:1px solid var(--border); border-radius:12px; overflow:hidden; margin-bottom:16px; }
+  .summary-row { display:flex; justify-content:space-between; align-items:flex-start; padding:12px 16px; border-bottom:1px solid var(--border); }
+  .summary-row:last-child { border-bottom:none; }
+  .summary-key { font-size:11px; color:var(--muted); flex-shrink:0; margin-right:12px; }
+  .summary-val { font-size:12px; color:var(--text); text-align:right; }
+  .notice { background:rgba(0,229,160,0.04); border:1px solid rgba(0,229,160,0.15); border-radius:8px; padding:12px 14px; font-size:11px; color:var(--muted2); line-height:1.6; margin-bottom:16px; }
+  .notice strong { color:var(--accent); }
+  .btn-primary { display:flex; align-items:center; justify-content:center; gap:8px; width:100%; background:var(--accent); color:#080c0a; font-family:'Syne',sans-serif; font-size:14px; font-weight:800; padding:15px 24px; border-radius:10px; border:none; cursor:pointer; transition:all 0.2s; letter-spacing:0.3px; margin-bottom:10px; }
+  .btn-primary:hover { background:#00ffb2; }
+  .btn-primary:active { transform:scale(0.98); }
+  .btn-primary:disabled { opacity:0.4; cursor:not-allowed; transform:none; }
+  .btn-back { display:flex; align-items:center; justify-content:center; gap:6px; width:100%; background:transparent; color:var(--muted2); font-family:'DM Mono',monospace; font-size:12px; padding:12px; border-radius:10px; border:1px solid var(--border); cursor:pointer; transition:all 0.2s; }
+  .btn-back:hover { border-color:rgba(255,255,255,0.15); color:var(--text); }
+  .success-wrap { text-align:center; padding:40px 20px; }
+  .success-icon { width:64px; height:64px; border-radius:50%; background:rgba(0,229,160,0.1); border:1px solid rgba(0,229,160,0.3); display:flex; align-items:center; justify-content:center; font-size:28px; margin:0 auto 20px; animation:popIn 0.5s cubic-bezier(0.175,0.885,0.32,1.275) both; }
+  @keyframes popIn { from{opacity:0;transform:scale(0.5)} to{opacity:1;transform:scale(1)} }
+  .success-title { font-family:'Syne',sans-serif; font-size:24px; font-weight:800; margin-bottom:10px; }
+  .success-sub { font-size:13px; color:var(--muted2); line-height:1.7; margin-bottom:28px; }
+  .next-steps { text-align:left; }
+  .next-step { display:flex; gap:14px; align-items:flex-start; background:var(--surface); border:1px solid var(--border); border-radius:10px; padding:14px; margin-bottom:8px; }
+  .step-num { width:24px; height:24px; border-radius:50%; background:rgba(0,229,160,0.1); border:1px solid rgba(0,229,160,0.2); display:flex; align-items:center; justify-content:center; font-size:11px; color:var(--accent); flex-shrink:0; font-family:'Syne',sans-serif; font-weight:700; }
+  .step-text { font-size:12px; color:var(--muted2); line-height:1.5; }
+  .step-text strong { color:var(--text); display:block; margin-bottom:2px; font-size:13px; }
+  .spinner { width:18px; height:18px; border:2px solid rgba(8,12,10,0.3); border-top-color:#080c0a; border-radius:50%; animation:spin 0.7s linear infinite; }
+  @keyframes spin { to{transform:rotate(360deg)} }
 </style>
 </head>
 <body>
 <div class="wrap">
 
-  <!-- HEADER -->
-  <header class="fade-in">
+  <header>
     <div class="logo">LEAD<span>DESK</span></div>
-    <div class="status-pill">
-      <span class="dot"></span>
-      LIVE TRAFFIC
-    </div>
+    <div class="status-pill"><span class="dot"></span>ACCEPTING PARTNERS</div>
   </header>
 
-  <!-- TICKER -->
-  <div class="ticker-wrap">
-    <div class="ticker">
-      <span class="tick-item">⚡ REAL-TIME REGISTRATIONS <span class="tick-sep">·</span></span>
-      <span class="tick-item">✅ NO BOTS <span class="tick-sep">·</span></span>
-      <span class="tick-item">🌎 EU · UK · ASIA · LATAM · AU <span class="tick-sep">·</span></span>
-      <span class="tick-item">💳 USDT PAYMENTS <span class="tick-sep">·</span></span>
-      <span class="tick-item">📦 SAME-DAY DELIVERY <span class="tick-sep">·</span></span>
-      <span class="tick-item">⚡ REAL-TIME REGISTRATIONS <span class="tick-sep">·</span></span>
-      <span class="tick-item">✅ NO BOTS <span class="tick-sep">·</span></span>
-      <span class="tick-item">🌎 EU · UK · ASIA · LATAM · AU <span class="tick-sep">·</span></span>
-      <span class="tick-item">💳 USDT PAYMENTS <span class="tick-sep">·</span></span>
-      <span class="tick-item">📦 SAME-DAY DELIVERY <span class="tick-sep">·</span></span>
-    </div>
+  <div class="steps" id="stepsBar">
+    <div class="step-item"><div class="step-circle active" id="sc1">1</div><div class="step-line" id="sl1"></div></div>
+    <div class="step-item"><div class="step-circle" id="sc2">2</div><div class="step-line" id="sl2"></div></div>
+    <div class="step-item"><div class="step-circle" id="sc3">3</div><div class="step-line" id="sl3"></div></div>
+    <div class="step-item"><div class="step-circle" id="sc4">4</div><div class="step-line" style="background:transparent"></div></div>
   </div>
 
-  <!-- HERO -->
-  <div class="hero fade-in">
-    <p class="eyebrow">Private Traffic Source</p>
-    <h1>Premium<br><em>Forex & Crypto</em><br>Lead Supply</h1>
-    <p class="hero-sub">Live investor registrations from private funnels. No recycled data. No bots. Ready for monetization.</p>
-    <div class="hero-stats">
-      <div class="stat">
-        <div class="stat-val">0-day</div>
-        <div class="stat-label">Lead Age</div>
+  <!-- SCREEN 1: OFFER -->
+  <div class="screen active" id="s1">
+    <div class="screen-title">Premium<br><em>Forex & Crypto</em><br>Lead Supply</div>
+    <p class="screen-sub">Real-time investor registrations from private funnels. Review what we offer, then start your onboarding.</p>
+    <div class="offer-cards">
+      <div class="offer-card">
+        <div class="offer-icon">⚡</div>
+        <div><div class="offer-title">What You Get</div><div class="offer-desc">Real-time trading registrations · Fresh CPL & CRG · No bots · No resold data · Timestamp + autologin validation</div></div>
       </div>
-      <div class="stat">
-        <div class="stat-val">6+</div>
-        <div class="stat-label">GEO Regions</div>
+      <div class="offer-card">
+        <div class="offer-icon">🌎</div>
+        <div><div class="offer-title">Available GEOs</div><div class="offer-desc"><div class="geo-wrap"><span class="geo-chip">🇪🇺 EU</span><span class="geo-chip">🇬🇧 UK</span><span class="geo-chip">🌏 Asia</span><span class="geo-chip">🌎 LATAM</span><span class="geo-chip">🇦🇺 AU</span><span class="geo-chip">🌍 Tier-2/3</span><span class="geo-chip na">🇩🇪 DE ✗</span></div></div></div>
       </div>
-      <div class="stat">
-        <div class="stat-val">CPL</div>
-        <div class="stat-label">CPA Ready</div>
+      <div class="offer-card">
+        <div class="offer-icon">💼</div>
+        <div><div class="offer-title">Models & Payment</div><div class="offer-desc">CPA · CPL · CRG · Performance-based pricing · Prepay first launch · USDT (TRC20 / ERC20)</div></div>
+      </div>
+    </div>
+    <button class="btn-primary" onclick="goTo(2)">Start Onboarding →</button>
+  </div>
+
+  <!-- SCREEN 2: COMPANY -->
+  <div class="screen" id="s2">
+    <div class="screen-title">Your <em>Company</em></div>
+    <p class="screen-sub">Tell us who you are so we can set you up with the right traffic.</p>
+    <div class="field">
+      <label class="field-label">Are you a brand or network? <span class="req">*</span></label>
+      <div class="radio-group">
+        <div class="radio-item" onclick="selectRadio('companyType','brand',this)"><div class="radio-dot"><div class="radio-dot-inner"></div></div><div class="radio-text"><div class="radio-title">Brand / Direct Advertiser</div><div class="radio-desc">You run your own offers and trading platform</div></div></div>
+        <div class="radio-item" onclick="selectRadio('companyType','network',this)"><div class="radio-dot"><div class="radio-dot-inner"></div></div><div class="radio-text"><div class="radio-title">Network / Affiliate</div><div class="radio-desc">You manage traffic for multiple advertisers</div></div></div>
+        <div class="radio-item" onclick="selectRadio('companyType','broker',this)"><div class="radio-dot"><div class="radio-dot-inner"></div></div><div class="radio-text"><div class="radio-title">Broker / Media Buyer</div><div class="radio-desc">You buy and redistribute leads or traffic</div></div></div>
+      </div>
+      <div class="field-error" id="err-companyType">Please select one option</div>
+    </div>
+    <div class="field">
+      <label class="field-label">Company / Brand name <span class="req">*</span></label>
+      <input type="text" id="companyName" placeholder="e.g. TradeMax Group">
+      <div class="field-error" id="err-companyName">Required</div>
+    </div>
+    <div class="field">
+      <label class="field-label">Your references <span class="req">*</span></label>
+      <textarea id="references" placeholder="List companies, brokers, or networks you've worked with."></textarea>
+      <div class="field-error" id="err-references">Please provide at least one reference</div>
+    </div>
+    <button class="btn-primary" onclick="validateS2()">Continue →</button>
+    <button class="btn-back" onclick="goTo(1)">← Back</button>
+  </div>
+
+  <!-- SCREEN 3: TRAFFIC -->
+  <div class="screen" id="s3">
+    <div class="screen-title">Traffic <em>Requirements</em></div>
+    <p class="screen-sub">Tell us exactly what you need and we'll match you with the right supply.</p>
+    <div class="field">
+      <label class="field-label">GEOs you work with <span class="req">*</span></label>
+      <div class="check-grid">
+        <div class="check-item" onclick="toggleCheck(this,'geos','EU')"><div class="check-box">✓</div><span class="check-label">🇪🇺 Europe (EU)</span></div>
+        <div class="check-item" onclick="toggleCheck(this,'geos','UK')"><div class="check-box">✓</div><span class="check-label">🇬🇧 United Kingdom</span></div>
+        <div class="check-item" onclick="toggleCheck(this,'geos','Asia')"><div class="check-box">✓</div><span class="check-label">🌏 Asia</span></div>
+        <div class="check-item" onclick="toggleCheck(this,'geos','LATAM')"><div class="check-box">✓</div><span class="check-label">🌎 LATAM</span></div>
+        <div class="check-item" onclick="toggleCheck(this,'geos','AU')"><div class="check-box">✓</div><span class="check-label">🇦🇺 Australia</span></div>
+        <div class="check-item" onclick="toggleCheck(this,'geos','Tier2/3')"><div class="check-box">✓</div><span class="check-label">🌍 Tier-2 / Tier-3</span></div>
+      </div>
+      <div class="field-error" id="err-geos">Select at least one GEO</div>
+    </div>
+    <div class="field">
+      <label class="field-label">Lead type <span class="req">*</span></label>
+      <div class="check-grid">
+        <div class="check-item" onclick="toggleCheck(this,'leadTypes','Hot')"><div class="check-box">✓</div><span class="check-label">🔥 Hot</span></div>
+        <div class="check-item" onclick="toggleCheck(this,'leadTypes','Warm')"><div class="check-box">✓</div><span class="check-label">♨️ Warm</span></div>
+        <div class="check-item" onclick="toggleCheck(this,'leadTypes','Data')"><div class="check-box">✓</div><span class="check-label">📊 Data</span></div>
+        <div class="check-item" onclick="toggleCheck(this,'leadTypes','Recovery')"><div class="check-box">✓</div><span class="check-label">♻️ Recovery</span></div>
+      </div>
+      <div class="field-error" id="err-leadTypes">Select at least one lead type</div>
+    </div>
+    <div class="field">
+      <label class="field-label">Expected daily volume <span class="req">*</span></label>
+      <div class="volume-display">
+        <div class="volume-val" id="volDisplay">50</div>
+        <div class="volume-unit">leads per day</div>
+      </div>
+      <input type="range" id="volSlider" min="10" max="500" step="10" value="50" oninput="document.getElementById('volDisplay').textContent=this.value">
+    </div>
+    <div class="field">
+      <label class="field-label">Preferred model <span class="req">*</span></label>
+      <div class="radio-group">
+        <div class="radio-item" onclick="selectRadio('model','CPL',this)"><div class="radio-dot"><div class="radio-dot-inner"></div></div><div class="radio-text"><div class="radio-title">CPL — Cost Per Lead</div><div class="radio-desc">Pay per validated registration delivered</div></div></div>
+        <div class="radio-item" onclick="selectRadio('model','CPA',this)"><div class="radio-dot"><div class="radio-dot-inner"></div></div><div class="radio-text"><div class="radio-title">CPA — Cost Per Action</div><div class="radio-desc">Pay on deposit or conversion event</div></div></div>
+        <div class="radio-item" onclick="selectRadio('model','CRG',this)"><div class="radio-dot"><div class="radio-dot-inner"></div></div><div class="radio-text"><div class="radio-title">CRG — Cost Per Revenue</div><div class="radio-desc">Revenue share hybrid model</div></div></div>
+      </div>
+      <div class="field-error" id="err-model">Please select a model</div>
+    </div>
+    <button class="btn-primary" onclick="validateS3()">Review Order →</button>
+    <button class="btn-back" onclick="goTo(2)">← Back</button>
+  </div>
+
+  <!-- SCREEN 4: REVIEW -->
+  <div class="screen" id="s4">
+    <div class="screen-title"><em>Review</em> & Submit</div>
+    <p class="screen-sub">Confirm your details before we connect you with our sales team.</p>
+    <div class="summary-box" id="summaryBox"></div>
+    <div class="notice"><strong>Note on prepay:</strong> All new partners start with prepay for the first launch. Once a working relationship is established we can discuss alternative payment structures.</div>
+    <button class="btn-primary" id="submitBtn" onclick="submitOrder()">
+      <span id="submitText">Submit & Get Connected</span>
+      <span id="submitSpinner" class="spinner" style="display:none"></span>
+    </button>
+    <button class="btn-back" onclick="goTo(3)">← Edit</button>
+  </div>
+
+  <!-- SCREEN 5: SUCCESS -->
+  <div class="screen" id="s5">
+    <div class="success-wrap">
+      <div class="success-icon">✅</div>
+      <div class="success-title">Request Received!</div>
+      <p class="success-sub">Thank you for your interest in LeadDesk. Our sales team has been notified and will be in touch with you shortly.</p>
+      <div class="next-steps">
+        <div class="next-step"><div class="step-num">1</div><div class="step-text"><strong>Under Review</strong>Our team is reviewing your GEOs, volume, and references</div></div>
+        <div class="next-step"><div class="step-num">2</div><div class="step-text"><strong>We'll Contact You</strong>A sales agent will reach out to you on Telegram shortly</div></div>
+        <div class="next-step"><div class="step-num">3</div><div class="step-text"><strong>Launch</strong>CRM connection → prepay → same-day traffic starts</div></div>
       </div>
     </div>
   </div>
-
-  <!-- WHAT YOU GET -->
-  <section>
-    <div class="sec-label">What you get</div>
-    <div class="features">
-      <div class="feature-row">
-        <div class="feat-icon">⚡</div>
-        <div>
-          <div class="feat-title">Real-Time Registrations</div>
-          <div class="feat-desc">Fresh leads from active funnels. Delivered with timestamp + autologin validation.</div>
-        </div>
-      </div>
-      <div class="feature-row">
-        <div class="feat-icon">🔒</div>
-        <div>
-          <div class="feat-title">Private, Non-Resold Traffic</div>
-          <div class="feat-desc">No aged databases. No incentive traffic. Exclusive supply per partner.</div>
-        </div>
-      </div>
-      <div class="feature-row">
-        <div class="feat-icon">📊</div>
-        <div>
-          <div class="feat-title">Full Tracking Transparency</div>
-          <div class="feat-desc">CRM connection before launch. Funnel source and timestamp on every lead.</div>
-        </div>
-      </div>
-      <div class="feature-row">
-        <div class="feat-icon">📦</div>
-        <div>
-          <div class="feat-title">Same-Day Delivery</div>
-          <div class="feat-desc">No daily caps. Volume aligned upfront. Scaling after validation.</div>
-        </div>
-      </div>
-    </div>
-  </section>
-
-  <!-- GEO -->
-  <section>
-    <div class="sec-label">Available GEOs</div>
-    <div class="geo-grid">
-      <div class="geo-tag"><span class="geo-flag">🇪🇺</span> Europe</div>
-      <div class="geo-tag"><span class="geo-flag">🇬🇧</span> United Kingdom</div>
-      <div class="geo-tag"><span class="geo-flag">🌏</span> Asia</div>
-      <div class="geo-tag"><span class="geo-flag">🌎</span> LATAM</div>
-      <div class="geo-tag"><span class="geo-flag">🇦🇺</span> Australia</div>
-      <div class="geo-tag"><span class="geo-flag">🌍</span> Tier-2 / Tier-3</div>
-      <div class="geo-tag unavail"><span class="geo-flag">🇩🇪</span> Germany ✗</div>
-    </div>
-  </section>
-
-  <!-- DATA FIELDS -->
-  <section>
-    <div class="sec-label">Lead data included</div>
-    <div class="data-fields">
-      <div class="field-card"><span class="field-check">✔</span><span class="field-name">Full Name</span></div>
-      <div class="field-card"><span class="field-check">✔</span><span class="field-name">Phone Number</span></div>
-      <div class="field-card"><span class="field-check">✔</span><span class="field-name">Email Address</span></div>
-      <div class="field-card"><span class="field-check">✔</span><span class="field-name">GEO / Country</span></div>
-      <div class="field-card"><span class="field-check">✔</span><span class="field-name">Reg. Timestamp</span></div>
-      <div class="field-card"><span class="field-check">✔</span><span class="field-name">Funnel Source</span></div>
-      <div class="field-card"><span class="field-check">✔</span><span class="field-name">Autologin Link</span></div>
-      <div class="field-card"><span class="field-check">✔</span><span class="field-name">Validation Status</span></div>
-    </div>
-  </section>
-
-  <!-- COOPERATION MODEL -->
-  <section>
-    <div class="sec-label">Cooperation model</div>
-    <div class="model-grid">
-      <div class="model-card highlight">
-        <div class="model-title">CPL</div>
-        <div class="model-desc">Cost per lead. Pay per validated registration delivered.</div>
-      </div>
-      <div class="model-card">
-        <div class="model-title">CPA</div>
-        <div class="model-desc">Cost per action. Performance-based on deposit conversions.</div>
-      </div>
-      <div class="model-card">
-        <div class="model-title">CRG</div>
-        <div class="model-desc">Cost per revenue generated. Rev-share hybrid model.</div>
-      </div>
-      <div class="model-card">
-        <div class="model-title">Test Vol.</div>
-        <div class="model-desc">Start small, validate quality, then scale with no caps.</div>
-      </div>
-    </div>
-  </section>
-
-  <!-- PAYMENT -->
-  <section>
-    <div class="sec-label">Payment</div>
-    <div class="payment-row">
-      <div class="crypto-icon">USDT</div>
-      <div>
-        <div class="crypto-name">Tether (USDT)</div>
-        <div class="crypto-sub">Prepay for first launch. Flexible structure for proven performers.</div>
-        <div class="network-tags">
-          <span class="net-tag">TRC20</span>
-          <span class="net-tag">ERC20</span>
-        </div>
-      </div>
-    </div>
-  </section>
-
-  <!-- CTA -->
-  <div class="cta-section">
-    <div class="cta-card">
-      <div class="cta-title">Ready to Start?</div>
-      <p class="cta-sub">Limited partner slots available. DM to discuss GEO, volume, pricing, and test launch terms.</p>
-      <a href="https://t.me/peon773" class="btn-primary">
-        ✉ Contact on Telegram
-      </a>
-      <a href="#" class="btn-secondary" onclick="return false;">
-        📋 Request Rate Card
-      </a>
-    </div>
-  </div>
-
-  <p class="disclaimer">Pricing is performance-based and depends on GEO, volume, and exclusivity. No public rate cards. All traffic is verified at source.</p>
 
 </div>
+<script>
+  const tg = window.Telegram?.WebApp;
+  if (tg) { tg.ready(); tg.expand(); }
+
+  // ── CONFIG ─────────────────────────────────────────────────────────────────
+  const BOT_TOKEN    = '8557519578:AAGwIc-a-7FwHY8H4ISXqfJyxjSn9E0IDpM';
+  const ADMIN_ID     = '1625374084';
+  // Paste your Apps Script Web App URL here after deploying
+  const SHEETS_URL   = 'https://script.google.com/macros/s/AKfycbxhHaKVN3pz2m-QWRH-EFBlXsHtLRXeg21ECNj4TrTrvqH1p5sariCh85HhzNUKEOIVfg/exec';
+
+  const form = {
+    companyType:'', companyName:'', references:'',
+    geos:[], leadTypes:[], volume:50, model:'',
+    tgUser:'', tgId:'',
+  };
+
+  if (tg?.initDataUnsafe?.user) {
+    const u = tg.initDataUnsafe.user;
+    form.tgUser = u.username ? '@'+u.username : (u.first_name+' '+(u.last_name||'')).trim();
+    form.tgId   = String(u.id || '');
+  }
+
+  // ── NAVIGATION ─────────────────────────────────────────────────────────────
+  function goTo(n) {
+    document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+    const el = document.getElementById('s'+n);
+    void el.offsetWidth;
+    el.classList.add('active');
+    updateSteps(n);
+    window.scrollTo({top:0,behavior:'smooth'});
+  }
+
+  function updateSteps(n) {
+    for (let i=1;i<=4;i++) {
+      const c = document.getElementById('sc'+i);
+      if (!c) continue;
+      c.classList.remove('active','done');
+      if (i<n) { c.classList.add('done'); c.textContent='✓'; }
+      else if (i===n) { c.classList.add('active'); c.textContent=i; }
+      else c.textContent=i;
+      const l = document.getElementById('sl'+i);
+      if (l) l.classList.toggle('done', i<n);
+    }
+    document.getElementById('stepsBar').style.display = n===5 ? 'none' : 'flex';
+  }
+
+  // ── FORM CONTROLS ──────────────────────────────────────────────────────────
+  function selectRadio(field, val, el) {
+    form[field] = val;
+    el.closest('.radio-group').querySelectorAll('.radio-item').forEach(r=>r.classList.remove('selected'));
+    el.classList.add('selected');
+    hideErr('err-'+field);
+  }
+
+  function toggleCheck(el, field, val) {
+    el.classList.toggle('selected');
+    if (el.classList.contains('selected')) { if (!form[field].includes(val)) form[field].push(val); }
+    else form[field] = form[field].filter(v=>v!==val);
+    hideErr('err-'+field);
+  }
+
+  function showErr(id, msg) { const e=document.getElementById(id); if(e){if(msg)e.textContent=msg; e.style.display='block';} }
+  function hideErr(id) { const e=document.getElementById(id); if(e) e.style.display='none'; }
+
+  // ── VALIDATION ─────────────────────────────────────────────────────────────
+  function validateS2() {
+    let ok=true;
+    if (!form.companyType)                                    { showErr('err-companyType'); ok=false; }
+    if (!document.getElementById('companyName').value.trim()) { showErr('err-companyName'); ok=false; }
+    if (!document.getElementById('references').value.trim())  { showErr('err-references');  ok=false; }
+    if (!ok) return;
+    form.companyName = document.getElementById('companyName').value.trim();
+    form.references  = document.getElementById('references').value.trim();
+    goTo(3);
+  }
+
+  function validateS3() {
+    let ok=true;
+    if (!form.geos.length)      { showErr('err-geos');      ok=false; }
+    if (!form.leadTypes.length) { showErr('err-leadTypes'); ok=false; }
+    if (!form.model)            { showErr('err-model');     ok=false; }
+    if (!ok) return;
+    form.volume = document.getElementById('volSlider').value;
+    buildSummary();
+    goTo(4);
+  }
+
+  function buildSummary() {
+    const rows = [
+      ['Type',       form.companyType.charAt(0).toUpperCase()+form.companyType.slice(1)],
+      ['Company',    form.companyName],
+      ['GEOs',       form.geos.join(', ')],
+      ['Lead Types', form.leadTypes.join(', ')],
+      ['Daily Vol.', form.volume+' leads/day'],
+      ['Model',      form.model],
+      ['References', form.references],
+      ['Telegram',   form.tgUser || 'Not available'],
+    ];
+    document.getElementById('summaryBox').innerHTML = rows.map(([k,v])=>
+      `<div class="summary-row"><span class="summary-key">${k}</span><span class="summary-val">${v}</span></div>`
+    ).join('');
+  }
+
+  // ── SUBMIT ─────────────────────────────────────────────────────────────────
+  async function submitOrder() {
+    const btn     = document.getElementById('submitBtn');
+    const txtEl   = document.getElementById('submitText');
+    const spinner = document.getElementById('submitSpinner');
+    btn.disabled=true; txtEl.style.display='none'; spinner.style.display='block';
+
+    const timestamp = new Date().toUTCString();
+
+    // 1. Notify admin
+    const adminMsg =
+`🔔 <b>NEW LEAD INQUIRY</b>
+
+👤 <b>Contact:</b> ${form.tgUser||'Unknown'} ${form.tgId ? '(ID: '+form.tgId+')' : ''}
+🏢 <b>Type:</b> ${form.companyType}
+🏷 <b>Company:</b> ${form.companyName}
+
+🌎 <b>GEOs:</b> ${form.geos.join(', ')}
+🎯 <b>Lead Types:</b> ${form.leadTypes.join(', ')}
+📦 <b>Daily Volume:</b> ${form.volume} leads/day
+💼 <b>Model:</b> ${form.model}
+
+📋 <b>References:</b>
+${form.references}
+
+⏰ <b>Submitted:</b> ${timestamp}`;
+
+    // 2. Follow-up message to buyer (only if we have their Telegram ID)
+    const buyerMsg =
+`👋 Hi${form.tgUser ? ' '+form.tgUser : ''}!
+
+Thank you for your interest in <b>LeadDesk</b>. We have received your onboarding request and our sales team is reviewing your details.
+
+We will be in touch with you shortly to discuss next steps. 🚀
+
+— LeadDesk Team`;
+
+    try {
+      // Send admin notification
+      await fetch(`https://api.telegram.org/bot${BOT_TOKEN}/sendMessage`, {
+        method:'POST',
+        headers:{'Content-Type':'application/json'},
+        body: JSON.stringify({ chat_id:ADMIN_ID, text:adminMsg, parse_mode:'HTML' }),
+      });
+
+      // Send buyer follow-up (only if Telegram ID is available)
+      if (form.tgId) {
+        await fetch(`https://api.telegram.org/bot${BOT_TOKEN}/sendMessage`, {
+          method:'POST',
+          headers:{'Content-Type':'application/json'},
+          body: JSON.stringify({ chat_id:form.tgId, text:buyerMsg, parse_mode:'HTML' }),
+        });
+      }
+
+      // Log to Google Sheets (non-blocking — won't fail the flow if sheet is down)
+      if (SHEETS_URL && SHEETS_URL !== 'YOUR_APPS_SCRIPT_WEB_APP_URL') {
+        fetch(SHEETS_URL, {
+          method:'POST',
+          headers:{'Content-Type':'application/json'},
+          body: JSON.stringify({
+            tgUser:      form.tgUser,
+            tgId:        form.tgId,
+            companyType: form.companyType,
+            companyName: form.companyName,
+            geos:        form.geos,
+            leadTypes:   form.leadTypes,
+            volume:      form.volume,
+            model:       form.model,
+            references:  form.references,
+            timestamp,
+          }),
+        }).catch(()=>{}); // silent fail — sheet logging is secondary
+      }
+
+      goTo(5);
+
+    } catch(e) {
+      btn.disabled=false; txtEl.style.display='inline'; spinner.style.display='none';
+      alert('Something went wrong. Please try again or DM @peon773 directly.');
+    }
+  }
+</script>
 </body>
 </html>
