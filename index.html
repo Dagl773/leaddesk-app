@@ -7,960 +7,1234 @@
 <script src="https://telegram.org/js/telegram-web-app.js"></script>
 <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
 <style>
-  :root {
-    --white:   #ffffff;
-    --off:     #f7f8f6;
-    --border:  #e8ebe5;
-    --border2: #d4d9cf;
-    --text:    #0d110c;
-    --text2:   #4a5247;
-    --muted:   #8a9186;
-    --green:   #1a7a4a;
-    --green2:  #22a060;
-    --green3:  #16623c;
-    --green-bg:#f0f7f3;
-    --green-bd:#c2ddd0;
-    --black:   #0d110c;
-    --error:   #c0392b;
-  }
+:root {
+  --white:#ffffff; --off:#f7f8f6; --border:#e8ebe5; --border2:#d4d9cf;
+  --text:#0d110c; --text2:#4a5247; --muted:#8a9186;
+  --green:#1a7a4a; --green2:#22a060; --green3:#16623c;
+  --green-bg:#f0f7f3; --green-bd:#c2ddd0;
+  --black:#0d110c; --error:#c0392b;
+}
+*{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+body{background:var(--white);color:var(--text);font-family:'Plus Jakarta Sans',sans-serif;min-height:100vh;overflow-x:hidden;-webkit-font-smoothing:antialiased}
+.wrap{max-width:480px;margin:0 auto;padding-bottom:80px}
 
-  * { margin:0; padding:0; box-sizing:border-box; -webkit-tap-highlight-color:transparent; }
+/* HEADER */
+header{position:sticky;top:0;z-index:100;background:var(--white);border-bottom:1px solid var(--border);padding:16px 20px;display:flex;align-items:center;justify-content:space-between}
+.logo{font-size:18px;font-weight:800;letter-spacing:-0.5px;color:var(--black)}
+.logo span{color:var(--green)}
+.badge{display:flex;align-items:center;gap:6px;background:var(--green-bg);border:1px solid var(--green-bd);border-radius:100px;padding:5px 12px;font-size:11px;font-weight:600;color:var(--green);cursor:pointer;transition:all 0.18s}
+.badge:hover{background:var(--green-bd)}
+.badge-dot{width:7px;height:7px;border-radius:50%;background:var(--green2);animation:blink 2s infinite}
+@keyframes blink{0%,100%{opacity:1}50%{opacity:0.3}}
 
-  body {
-    background: var(--white);
-    color: var(--text);
-    font-family: 'Plus Jakarta Sans', sans-serif;
-    min-height: 100vh;
-    overflow-x: hidden;
-    -webkit-font-smoothing: antialiased;
-  }
+/* TICKER */
+.ticker-wrap{overflow:hidden;background:var(--black);border-bottom:1px solid rgba(255,255,255,0.06);padding:8px 0;white-space:nowrap}
+.ticker-track{display:inline-block;animation:ticker 30s linear infinite;white-space:nowrap}
+.ticker-track:hover{animation-play-state:paused}
+@keyframes ticker{0%{transform:translateX(0)}100%{transform:translateX(-50%)}}
+.ticker-item{display:inline-block;font-size:11px;font-weight:600;color:var(--green2);letter-spacing:0.3px;padding:0 6px}
+.ticker-sep{display:inline-block;color:rgba(255,255,255,0.2);font-size:11px;padding:0 4px}
 
-  .wrap { max-width: 480px; margin: 0 auto; padding-bottom: 80px; }
+/* FLOW PROGRESS */
+.flow-progress{padding:14px 20px 0;background:var(--white);display:none}
+.flow-progress.visible{display:block}
+.flow-track{height:3px;background:var(--border);border-radius:2px}
+.flow-fill{height:100%;background:var(--green2);border-radius:2px;transition:width 0.4s cubic-bezier(0.4,0,0.2,1);width:0%}
+.flow-steps{display:flex;justify-content:space-between;padding:6px 0 0}
+.flow-step-lbl{font-size:10px;font-weight:600;color:var(--muted);letter-spacing:0.3px;transition:color 0.3s}
+.flow-step-lbl.active{color:var(--green)}
+.flow-step-lbl.done{color:var(--text2)}
 
-  /* ── HEADER ── */
-  header {
-    position: sticky; top: 0; z-index: 100;
-    background: var(--white);
-    border-bottom: 1px solid var(--border);
-    padding: 16px 20px;
-    display: flex; align-items: center; justify-content: space-between;
-  }
+/* SCREENS */
+.screen{display:none;padding:28px 20px 0;animation:fadeUp 0.3s ease both}
+.screen.active{display:block}
+@keyframes fadeUp{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
 
-  .logo {
-    font-size: 18px;
-    font-weight: 800;
-    letter-spacing: -0.5px;
-    color: var(--black);
-  }
-  .logo span { color: var(--green); }
+/* HERO */
+.hero-tag{display:inline-flex;align-items:center;gap:6px;background:var(--green-bg);border:1px solid var(--green-bd);border-radius:100px;padding:5px 12px;font-size:11px;font-weight:700;color:var(--green3);letter-spacing:0.5px;text-transform:uppercase;margin-bottom:16px}
+.hero-title{font-size:28px;font-weight:800;line-height:1.15;letter-spacing:-0.8px;color:var(--black);margin-bottom:12px}
+.hero-title .hl{color:var(--green)}
+.hero-sub{font-size:14px;color:var(--text2);line-height:1.7;font-weight:400;margin-bottom:24px}
 
-  .badge {
-    display: flex; align-items: center; gap: 6px;
-    background: var(--green-bg);
-    border: 1px solid var(--green-bd);
-    border-radius: 100px;
-    padding: 5px 12px;
-    font-size: 11px;
-    font-weight: 600;
-    color: var(--green);
-    letter-spacing: 0.3px;
-  }
-  .badge-dot {
-    width: 7px; height: 7px;
-    border-radius: 50%;
-    background: var(--green2);
-    animation: blink 2s infinite;
-  }
-  @keyframes blink { 0%,100%{opacity:1} 50%{opacity:0.3} }
+/* STAT ROW */
+.stat-row{display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px;margin-bottom:24px}
+.stat-card{background:var(--off);border:1px solid var(--border);border-radius:10px;padding:14px 12px;text-align:center}
+.stat-val{font-size:20px;font-weight:800;color:var(--green);letter-spacing:-0.5px;line-height:1;margin-bottom:4px}
+.stat-label{font-size:10px;color:var(--muted);font-weight:500;letter-spacing:0.3px}
 
-  /* ── PROGRESS BAR ── */
-  .progress-wrap {
-    padding: 0 20px;
-    background: var(--white);
-  }
-  .progress-track {
-    height: 3px;
-    background: var(--border);
-    border-radius: 2px;
-    margin-top: 14px;
-  }
-  .progress-fill {
-    height: 100%;
-    background: var(--green2);
-    border-radius: 2px;
-    transition: width 0.4s cubic-bezier(0.4,0,0.2,1);
-    width: 0%;
-  }
+/* PRODUCT CARDS - now navigation buttons */
+.prod-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:24px}
+.prod-card{position:relative;background:var(--white);border:1.5px solid var(--border2);border-radius:12px;padding:18px 14px 16px;cursor:pointer;transition:all 0.18s;user-select:none;text-align:left}
+.prod-card:hover{border-color:var(--green2);background:var(--green-bg);transform:translateY(-1px);box-shadow:0 4px 16px rgba(34,160,96,0.1)}
+.prod-card:active{transform:translateY(0)}
+.prod-arrow{position:absolute;top:12px;right:12px;font-size:14px;color:var(--muted);transition:color 0.18s}
+.prod-card:hover .prod-arrow{color:var(--green2)}
+.prod-icon{font-size:22px;margin-bottom:8px}
+.prod-name{font-size:15px;font-weight:800;color:var(--black);margin-bottom:4px}
+.prod-desc{font-size:11px;color:var(--text2);line-height:1.5;font-weight:400;margin-bottom:10px}
+.prod-tag{display:inline-block;background:var(--green-bg);border:1px solid var(--green-bd);border-radius:100px;padding:2px 8px;font-size:10px;font-weight:700;color:var(--green3)}
+.prod-tag-addon{background:var(--off);border-color:var(--border2);color:var(--muted)}
 
-  .step-labels {
-    display: flex; justify-content: space-between;
-    padding: 8px 0 0;
-    margin-bottom: 4px;
-  }
-  .step-lbl {
-    font-size: 10px;
-    font-weight: 600;
-    color: var(--muted);
-    letter-spacing: 0.3px;
-    transition: color 0.3s;
-  }
-  .step-lbl.active { color: var(--green); }
-  .step-lbl.done   { color: var(--text2); }
+/* GENERAL INQUIRY PRODUCT TOGGLES */
+.gen-prod-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:8px}
+.gen-prod-card{position:relative;background:var(--white);border:1.5px solid var(--border2);border-radius:12px;padding:16px 14px;cursor:pointer;transition:all 0.18s;user-select:none;text-align:center}
+.gen-prod-card:hover{border-color:var(--green2);background:var(--green-bg)}
+.gen-prod-card.selected{border-color:var(--green2);background:var(--green-bg)}
+.gen-prod-check{position:absolute;top:10px;right:10px;width:20px;height:20px;border-radius:50%;border:2px solid var(--border2);background:var(--white);display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:800;color:transparent;transition:all 0.18s}
+.gen-prod-card.selected .gen-prod-check{background:var(--green2);border-color:var(--green2);color:white;content:'✓'}
+.gen-prod-icon{font-size:26px;margin-bottom:6px}
+.gen-prod-name{font-size:14px;font-weight:800;color:var(--black);margin-bottom:3px}
+.gen-prod-sub{font-size:11px;color:var(--muted);font-weight:400}
 
-  /* ── SCREENS ── */
-  .screen { display:none; padding: 28px 20px 0; animation: fadeUp 0.3s ease both; }
-  .screen.active { display: block; }
-  @keyframes fadeUp { from{opacity:0;transform:translateY(8px)} to{opacity:1;transform:translateY(0)} }
+/* BIG START BUTTON */
+.btn-start-onboarding{display:flex;align-items:center;justify-content:center;width:100%;background:var(--green);color:white;font-family:'Plus Jakarta Sans',sans-serif;font-size:17px;font-weight:800;padding:18px;border-radius:14px;border:none;cursor:pointer;transition:all 0.18s;margin-bottom:14px;letter-spacing:-0.3px;box-shadow:0 4px 20px rgba(26,122,74,0.25)}
+.btn-start-onboarding:hover{background:var(--green2);box-shadow:0 6px 28px rgba(34,160,96,0.35);transform:translateY(-1px)}
+.btn-start-onboarding:active{transform:scale(0.99);box-shadow:none}
+.prod-grid-label{font-size:11px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:1px;margin-bottom:10px}
+.feature-list{display:flex;flex-direction:column;gap:1px;margin-bottom:28px}
+.feature-item{display:flex;align-items:flex-start;gap:14px;padding:16px 0;border-bottom:1px solid var(--border)}
+.feature-item:first-child{border-top:1px solid var(--border)}
+.feat-icon-wrap{width:36px;height:36px;border-radius:8px;background:var(--green-bg);border:1px solid var(--green-bd);display:flex;align-items:center;justify-content:center;font-size:16px;flex-shrink:0}
+.feat-body{flex:1}
+.feat-title{font-size:14px;font-weight:700;color:var(--black);margin-bottom:3px}
+.feat-desc{font-size:12px;color:var(--text2);line-height:1.6;font-weight:400}
+.geo-row{display:flex;flex-wrap:wrap;gap:6px;margin-top:8px}
+.geo-pill{background:var(--white);border:1px solid var(--border2);border-radius:100px;padding:4px 10px;font-size:11px;font-weight:500;color:var(--text2)}
+.geo-pill.na{text-decoration:line-through;opacity:0.4}
 
-  /* ── HERO (screen 1) ── */
-  .hero-tag {
-    display: inline-flex; align-items: center; gap: 6px;
-    background: var(--green-bg);
-    border: 1px solid var(--green-bd);
-    border-radius: 100px;
-    padding: 5px 12px;
-    font-size: 11px;
-    font-weight: 700;
-    color: var(--green3);
-    letter-spacing: 0.5px;
-    text-transform: uppercase;
-    margin-bottom: 16px;
-  }
+/* PRODUCT FORM SCREENS */
+.prod-screen-header{display:flex;align-items:center;gap:12px;margin-bottom:24px;padding-bottom:20px;border-bottom:1px solid var(--border)}
+.prod-screen-icon{width:48px;height:48px;border-radius:12px;background:var(--green-bg);border:1px solid var(--green-bd);display:flex;align-items:center;justify-content:center;font-size:22px;flex-shrink:0}
+.prod-screen-title{font-size:20px;font-weight:800;color:var(--black);letter-spacing:-0.3px}
+.prod-screen-sub{font-size:12px;color:var(--muted);margin-top:2px}
 
-  .hero-title {
-    font-size: 30px;
-    font-weight: 800;
-    line-height: 1.15;
-    letter-spacing: -0.8px;
-    color: var(--black);
-    margin-bottom: 12px;
-  }
-  .hero-title .hl { color: var(--green); }
+/* SECTION TITLES (inside forms) */
+.sec-tag{font-size:11px;font-weight:700;color:var(--green);letter-spacing:1px;text-transform:uppercase;margin-bottom:8px}
+.sec-title{font-size:24px;font-weight:800;letter-spacing:-0.5px;color:var(--black);margin-bottom:8px;line-height:1.2}
+.sec-sub{font-size:13px;color:var(--text2);line-height:1.7;margin-bottom:28px;font-weight:400}
 
-  .hero-sub {
-    font-size: 14px;
-    color: var(--text2);
-    line-height: 1.7;
-    font-weight: 400;
-    margin-bottom: 28px;
-  }
+/* FORM ELEMENTS */
+.field{margin-bottom:20px}
+.field-label{display:block;font-size:12px;font-weight:700;color:var(--black);margin-bottom:8px;letter-spacing:0.1px}
+.field-label .req{color:var(--green)}
+.field-hint{font-size:11px;color:var(--muted);margin-top:5px}
+input[type=text],input[type=email],input[type=number],textarea,select{width:100%;background:var(--white);border:1.5px solid var(--border2);border-radius:10px;padding:13px 16px;color:var(--black);font-family:'Plus Jakarta Sans',sans-serif;font-size:14px;font-weight:400;outline:none;transition:border-color 0.2s,box-shadow 0.2s;-webkit-appearance:none}
+input::placeholder,textarea::placeholder{color:var(--muted)}
+input:focus,textarea:focus,select:focus{border-color:var(--green2);box-shadow:0 0 0 3px rgba(34,160,96,0.1)}
+textarea{resize:none;min-height:80px;line-height:1.6}
+select{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%238a9186' stroke-width='1.5' fill='none' stroke-linecap='round'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 14px center;padding-right:36px}
+select option{background:#fff}
+.field-error{font-size:11px;color:var(--error);margin-top:6px;display:none;font-weight:500}
 
-  /* ── STAT ROW ── */
-  .stat-row {
-    display: grid;
-    grid-template-columns: 1fr 1fr 1fr;
-    gap: 10px;
-    margin-bottom: 28px;
-  }
-  .stat-card {
-    background: var(--off);
-    border: 1px solid var(--border);
-    border-radius: 10px;
-    padding: 14px 12px;
-    text-align: center;
-  }
-  .stat-val {
-    font-size: 20px;
-    font-weight: 800;
-    color: var(--green);
-    letter-spacing: -0.5px;
-    line-height: 1;
-    margin-bottom: 4px;
-  }
-  .stat-label {
-    font-size: 10px;
-    color: var(--muted);
-    font-weight: 500;
-    letter-spacing: 0.3px;
-  }
+/* RADIO */
+.radio-group{display:flex;flex-direction:column;gap:8px}
+.radio-item{display:flex;align-items:center;gap:14px;background:var(--white);border:1.5px solid var(--border2);border-radius:10px;padding:14px 16px;cursor:pointer;transition:all 0.18s;user-select:none}
+.radio-item:hover,.radio-item.selected{border-color:var(--green2);background:var(--green-bg)}
+.radio-circle{width:20px;height:20px;border-radius:50%;border:2px solid var(--border2);background:var(--white);display:flex;align-items:center;justify-content:center;flex-shrink:0;transition:all 0.18s}
+.radio-inner{width:9px;height:9px;border-radius:50%;background:var(--green2);display:none}
+.radio-item.selected .radio-circle{border-color:var(--green2)}
+.radio-item.selected .radio-inner{display:block}
+.radio-content{flex:1}
+.radio-title{font-size:14px;font-weight:600;color:var(--black);margin-bottom:2px}
+.radio-desc{font-size:12px;color:var(--muted)}
 
-  /* ── FEATURE LIST ── */
-  .feature-list { display: flex; flex-direction: column; gap: 1px; margin-bottom: 28px; }
+/* CHECKBOXES */
+.check-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.check-item{display:flex;align-items:center;gap:10px;background:var(--white);border:1.5px solid var(--border2);border-radius:10px;padding:12px 14px;cursor:pointer;transition:all 0.18s;user-select:none}
+.check-item:hover,.check-item.selected{border-color:var(--green2);background:var(--green-bg)}
+.check-box{width:20px;height:20px;border-radius:5px;border:2px solid var(--border2);background:var(--white);display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;color:transparent;flex-shrink:0;transition:all 0.18s}
+.check-item.selected .check-box{background:var(--green2);border-color:var(--green2);color:white}
+.check-label{font-size:13px;font-weight:500;color:var(--text2)}
+.check-item.selected .check-label{color:var(--black)}
 
-  .feature-item {
-    display: flex; align-items: flex-start; gap: 14px;
-    padding: 16px 0;
-    border-bottom: 1px solid var(--border);
-  }
-  .feature-item:first-child { border-top: 1px solid var(--border); }
+/* VOLUME */
+.volume-card{background:var(--off);border:1.5px solid var(--border);border-radius:10px;padding:20px 16px 16px;margin-bottom:14px;text-align:center}
+.vol-number{font-size:44px;font-weight:800;color:var(--green);letter-spacing:-2px;line-height:1;margin-bottom:4px}
+.vol-unit{font-size:12px;color:var(--muted);font-weight:600;letter-spacing:0.5px;text-transform:uppercase}
+input[type=range]{width:100%;-webkit-appearance:none;appearance:none;height:4px;background:var(--border2);border-radius:2px;outline:none;border:none;padding:0}
+input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:22px;height:22px;border-radius:50%;background:var(--green2);cursor:pointer;border:3px solid white;box-shadow:0 1px 4px rgba(0,0,0,0.15)}
 
-  .feat-icon-wrap {
-    width: 36px; height: 36px;
-    border-radius: 8px;
-    background: var(--green-bg);
-    border: 1px solid var(--green-bd);
-    display: flex; align-items: center; justify-content: center;
-    font-size: 16px;
-    flex-shrink: 0;
-  }
-  .feat-body { flex: 1; }
-  .feat-title { font-size: 14px; font-weight: 700; color: var(--black); margin-bottom: 3px; }
-  .feat-desc  { font-size: 12px; color: var(--text2); line-height: 1.6; font-weight: 400; }
+/* SUMMARY */
+.summary-card{background:var(--off);border:1.5px solid var(--border);border-radius:12px;overflow:hidden;margin-bottom:16px}
+.summary-head{background:var(--black);padding:12px 18px}
+.summary-head-text{font-size:11px;font-weight:700;color:white;letter-spacing:1.5px;text-transform:uppercase}
+.summary-row{display:flex;justify-content:space-between;align-items:flex-start;padding:13px 18px;border-bottom:1px solid var(--border)}
+.summary-row:last-child{border-bottom:none}
+.s-key{font-size:12px;color:var(--muted);font-weight:500;flex-shrink:0;margin-right:16px}
+.s-val{font-size:13px;color:var(--black);font-weight:600;text-align:right}
 
-  /* ── GEO PILLS ── */
-  .geo-row { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 8px; }
-  .geo-pill {
-    background: var(--white);
-    border: 1px solid var(--border2);
-    border-radius: 100px;
-    padding: 4px 10px;
-    font-size: 11px;
-    font-weight: 500;
-    color: var(--text2);
-  }
-  .geo-pill.na { text-decoration: line-through; opacity: 0.4; }
+/* NOTICE */
+.notice{background:var(--green-bg);border:1px solid var(--green-bd);border-radius:10px;padding:14px 16px;font-size:12px;color:var(--green3);line-height:1.7;margin-bottom:20px;font-weight:500}
 
-  /* ── SCREEN TITLES ── */
-  .sec-tag {
-    font-size: 11px;
-    font-weight: 700;
-    color: var(--green);
-    letter-spacing: 1px;
-    text-transform: uppercase;
-    margin-bottom: 8px;
-  }
-  .sec-title {
-    font-size: 24px;
-    font-weight: 800;
-    letter-spacing: -0.5px;
-    color: var(--black);
-    margin-bottom: 8px;
-    line-height: 1.2;
-  }
-  .sec-sub {
-    font-size: 13px;
-    color: var(--text2);
-    line-height: 1.7;
-    margin-bottom: 28px;
-    font-weight: 400;
-  }
+/* BUTTONS */
+.btn-primary{display:flex;align-items:center;justify-content:center;gap:8px;width:100%;background:var(--green);color:white;font-family:'Plus Jakarta Sans',sans-serif;font-size:15px;font-weight:700;padding:16px;border-radius:12px;border:none;cursor:pointer;transition:all 0.18s;margin-bottom:10px;letter-spacing:-0.2px}
+.btn-primary:hover{background:var(--green2)}
+.btn-primary:active{transform:scale(0.99)}
+.btn-primary:disabled{opacity:0.45;cursor:not-allowed;transform:none}
+.btn-ghost{display:flex;align-items:center;justify-content:center;width:100%;background:transparent;color:var(--text2);font-family:'Plus Jakarta Sans',sans-serif;font-size:14px;font-weight:600;padding:14px;border-radius:12px;border:1.5px solid var(--border2);cursor:pointer;transition:all 0.18s}
+.btn-ghost:hover{border-color:var(--text2);color:var(--black)}
+.btn-back-link{display:inline-flex;align-items:center;font-size:13px;font-weight:600;color:var(--muted);margin-bottom:20px;cursor:pointer;transition:color 0.18s;background:none;border:none;padding:0;font-family:'Plus Jakarta Sans',sans-serif}
+.btn-back-link:hover{color:var(--black)}
 
-  /* ── FORM ── */
-  .field { margin-bottom: 20px; }
+/* SUCCESS */
+.success-wrap{padding:40px 20px}
+.success-top{text-align:center;padding-bottom:32px;border-bottom:1px solid var(--border);margin-bottom:32px}
+.success-icon{width:72px;height:72px;border-radius:50%;background:var(--green-bg);border:2px solid var(--green-bd);display:flex;align-items:center;justify-content:center;font-size:30px;margin:0 auto 20px;animation:popIn 0.5s cubic-bezier(0.175,0.885,0.32,1.275) both}
+@keyframes popIn{from{opacity:0;transform:scale(0.6)}to{opacity:1;transform:scale(1)}}
+.success-title{font-size:26px;font-weight:800;letter-spacing:-0.5px;color:var(--black);margin-bottom:10px}
+.success-sub{font-size:14px;color:var(--text2);line-height:1.7;font-weight:400}
+.next-steps{display:flex;flex-direction:column;gap:10px}
+.next-step{display:flex;gap:16px;align-items:flex-start;padding:16px;background:var(--off);border:1px solid var(--border);border-radius:10px}
+.step-num-wrap{width:32px;height:32px;border-radius:50%;background:var(--green);display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:800;color:white;flex-shrink:0}
+.step-body strong{display:block;font-size:14px;font-weight:700;color:var(--black);margin-bottom:3px}
+.step-body span{font-size:12px;color:var(--text2);line-height:1.6}
 
-  .field-label {
-    display: block;
-    font-size: 12px;
-    font-weight: 700;
-    color: var(--black);
-    margin-bottom: 8px;
-    letter-spacing: 0.1px;
-  }
-  .field-label .req { color: var(--green); }
+/* SPINNER */
+.spinner{width:18px;height:18px;border:2.5px solid rgba(255,255,255,0.3);border-top-color:white;border-radius:50%;animation:spin 0.7s linear infinite}
+@keyframes spin{to{transform:rotate(360deg)}}
 
-  input[type=text], textarea {
-    width: 100%;
-    background: var(--white);
-    border: 1.5px solid var(--border2);
-    border-radius: 10px;
-    padding: 13px 16px;
-    color: var(--black);
-    font-family: 'Plus Jakarta Sans', sans-serif;
-    font-size: 14px;
-    font-weight: 400;
-    outline: none;
-    transition: border-color 0.2s, box-shadow 0.2s;
-    -webkit-appearance: none;
-  }
-  input::placeholder, textarea::placeholder { color: var(--muted); }
-  input:focus, textarea:focus {
-    border-color: var(--green2);
-    box-shadow: 0 0 0 3px rgba(34,160,96,0.1);
-  }
-  textarea { resize: none; min-height: 90px; line-height: 1.6; }
-
-  .field-error { font-size: 11px; color: var(--error); margin-top: 6px; display: none; font-weight: 500; }
-
-  /* ── RADIO ── */
-  .radio-group { display: flex; flex-direction: column; gap: 8px; }
-  .radio-item {
-    display: flex; align-items: center; gap: 14px;
-    background: var(--white);
-    border: 1.5px solid var(--border2);
-    border-radius: 10px;
-    padding: 14px 16px;
-    cursor: pointer;
-    transition: all 0.18s;
-    user-select: none;
-  }
-  .radio-item:hover { border-color: var(--green2); background: var(--green-bg); }
-  .radio-item.selected { border-color: var(--green2); background: var(--green-bg); }
-
-  .radio-circle {
-    width: 20px; height: 20px;
-    border-radius: 50%;
-    border: 2px solid var(--border2);
-    background: var(--white);
-    display: flex; align-items: center; justify-content: center;
-    flex-shrink: 0;
-    transition: all 0.18s;
-  }
-  .radio-inner { width: 9px; height: 9px; border-radius: 50%; background: var(--green2); display: none; }
-  .radio-item.selected .radio-circle { border-color: var(--green2); }
-  .radio-item.selected .radio-inner  { display: block; }
-
-  .radio-content { flex: 1; }
-  .radio-title { font-size: 14px; font-weight: 600; color: var(--black); margin-bottom: 2px; }
-  .radio-desc  { font-size: 12px; color: var(--muted); }
-
-  /* ── CHECKBOXES ── */
-  .check-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
-  .check-item {
-    display: flex; align-items: center; gap: 10px;
-    background: var(--white);
-    border: 1.5px solid var(--border2);
-    border-radius: 10px;
-    padding: 12px 14px;
-    cursor: pointer;
-    transition: all 0.18s;
-    user-select: none;
-  }
-  .check-item:hover  { border-color: var(--green2); background: var(--green-bg); }
-  .check-item.selected { border-color: var(--green2); background: var(--green-bg); }
-
-  .check-box {
-    width: 20px; height: 20px;
-    border-radius: 5px;
-    border: 2px solid var(--border2);
-    background: var(--white);
-    display: flex; align-items: center; justify-content: center;
-    font-size: 11px;
-    font-weight: 700;
-    color: transparent;
-    flex-shrink: 0;
-    transition: all 0.18s;
-  }
-  .check-item.selected .check-box {
-    background: var(--green2);
-    border-color: var(--green2);
-    color: white;
-  }
-  .check-label { font-size: 13px; font-weight: 500; color: var(--text2); }
-  .check-item.selected .check-label { color: var(--black); }
-
-  /* ── VOLUME ── */
-  .volume-card {
-    background: var(--off);
-    border: 1.5px solid var(--border);
-    border-radius: 10px;
-    padding: 20px 16px 16px;
-    margin-bottom: 14px;
-    text-align: center;
-  }
-  .vol-number {
-    font-size: 44px;
-    font-weight: 800;
-    color: var(--green);
-    letter-spacing: -2px;
-    line-height: 1;
-    margin-bottom: 4px;
-  }
-  .vol-unit { font-size: 12px; color: var(--muted); font-weight: 600; letter-spacing: 0.5px; text-transform: uppercase; }
-
-  input[type=range] {
-    width: 100%; -webkit-appearance: none; appearance: none;
-    height: 4px; background: var(--border2);
-    border-radius: 2px; outline: none; border: none; padding: 0;
-  }
-  input[type=range]::-webkit-slider-thumb {
-    -webkit-appearance: none;
-    width: 22px; height: 22px; border-radius: 50%;
-    background: var(--green2);
-    cursor: pointer;
-    border: 3px solid white;
-    box-shadow: 0 1px 4px rgba(0,0,0,0.15);
-  }
-
-  /* ── SUMMARY ── */
-  .summary-card {
-    background: var(--off);
-    border: 1.5px solid var(--border);
-    border-radius: 12px;
-    overflow: hidden;
-    margin-bottom: 16px;
-  }
-  .summary-head {
-    background: var(--black);
-    padding: 12px 18px;
-    display: flex; align-items: center; gap: 8px;
-  }
-  .summary-head-text {
-    font-size: 11px;
-    font-weight: 700;
-    color: white;
-    letter-spacing: 1.5px;
-    text-transform: uppercase;
-  }
-  .summary-row {
-    display: flex; justify-content: space-between; align-items: flex-start;
-    padding: 13px 18px;
-    border-bottom: 1px solid var(--border);
-  }
-  .summary-row:last-child { border-bottom: none; }
-  .s-key { font-size: 12px; color: var(--muted); font-weight: 500; flex-shrink: 0; margin-right: 16px; }
-  .s-val { font-size: 13px; color: var(--black); font-weight: 600; text-align: right; }
-
-  /* ── NOTICE ── */
-  .notice {
-    background: var(--green-bg);
-    border: 1px solid var(--green-bd);
-    border-radius: 10px;
-    padding: 14px 16px;
-    font-size: 12px;
-    color: var(--green3);
-    line-height: 1.7;
-    margin-bottom: 20px;
-    font-weight: 500;
-  }
-
-  /* ── BUTTONS ── */
-  .btn-primary {
-    display: flex; align-items: center; justify-content: center; gap: 8px;
-    width: 100%;
-    background: var(--green);
-    color: white;
-    font-family: 'Plus Jakarta Sans', sans-serif;
-    font-size: 15px;
-    font-weight: 700;
-    padding: 16px;
-    border-radius: 12px;
-    border: none;
-    cursor: pointer;
-    transition: all 0.18s;
-    margin-bottom: 10px;
-    letter-spacing: -0.2px;
-  }
-  .btn-primary:hover  { background: var(--green2); }
-  .btn-primary:active { transform: scale(0.99); }
-  .btn-primary:disabled { opacity: 0.45; cursor: not-allowed; transform: none; }
-
-  .btn-ghost {
-    display: flex; align-items: center; justify-content: center;
-    width: 100%;
-    background: transparent;
-    color: var(--text2);
-    font-family: 'Plus Jakarta Sans', sans-serif;
-    font-size: 14px;
-    font-weight: 600;
-    padding: 14px;
-    border-radius: 12px;
-    border: 1.5px solid var(--border2);
-    cursor: pointer;
-    transition: all 0.18s;
-  }
-  .btn-ghost:hover { border-color: var(--text2); color: var(--black); }
-
-  /* ── SUCCESS ── */
-  .success-wrap { padding: 40px 20px; }
-
-  .success-top {
-    text-align: center;
-    padding-bottom: 32px;
-    border-bottom: 1px solid var(--border);
-    margin-bottom: 32px;
-  }
-
-  .success-icon {
-    width: 72px; height: 72px;
-    border-radius: 50%;
-    background: var(--green-bg);
-    border: 2px solid var(--green-bd);
-    display: flex; align-items: center; justify-content: center;
-    font-size: 30px;
-    margin: 0 auto 20px;
-    animation: popIn 0.5s cubic-bezier(0.175,0.885,0.32,1.275) both;
-  }
-  @keyframes popIn { from{opacity:0;transform:scale(0.6)} to{opacity:1;transform:scale(1)} }
-
-  .success-title {
-    font-size: 26px;
-    font-weight: 800;
-    letter-spacing: -0.5px;
-    color: var(--black);
-    margin-bottom: 10px;
-  }
-  .success-sub {
-    font-size: 14px;
-    color: var(--text2);
-    line-height: 1.7;
-    font-weight: 400;
-  }
-
-  .next-steps { display: flex; flex-direction: column; gap: 10px; }
-
-  .next-step {
-    display: flex; gap: 16px; align-items: flex-start;
-    padding: 16px;
-    background: var(--off);
-    border: 1px solid var(--border);
-    border-radius: 10px;
-  }
-  .step-num-wrap {
-    width: 32px; height: 32px;
-    border-radius: 50%;
-    background: var(--green);
-    display: flex; align-items: center; justify-content: center;
-    font-size: 13px;
-    font-weight: 800;
-    color: white;
-    flex-shrink: 0;
-  }
-  .step-body strong { display: block; font-size: 14px; font-weight: 700; color: var(--black); margin-bottom: 3px; }
-  .step-body span   { font-size: 12px; color: var(--text2); line-height: 1.6; }
-
-  /* ── SPINNER ── */
-  .spinner {
-    width: 18px; height: 18px;
-    border: 2.5px solid rgba(255,255,255,0.3);
-    border-top-color: white;
-    border-radius: 50%;
-    animation: spin 0.7s linear infinite;
-  }
-  @keyframes spin { to{transform:rotate(360deg)} }
-
-  /* ── DIVIDER ── */
-  .or-divider {
-    display: flex; align-items: center; gap: 12px;
-    margin: 20px 0;
-    font-size: 11px; color: var(--muted); font-weight: 500;
-  }
-  .or-divider::before, .or-divider::after {
-    content: ''; flex: 1; height: 1px; background: var(--border);
-  }
+/* INFO CARDS (inside product screens) */
+.info-card{background:var(--off);border:1px solid var(--border);border-radius:10px;padding:14px 16px;margin-bottom:16px;display:flex;gap:12px;align-items:flex-start}
+.info-icon{font-size:18px;flex-shrink:0;margin-top:1px}
+.info-body{flex:1}
+.info-title{font-size:13px;font-weight:700;color:var(--black);margin-bottom:3px}
+.info-desc{font-size:12px;color:var(--text2);line-height:1.5}
 </style>
 </head>
 <body>
 <div class="wrap">
 
-  <!-- HEADER -->
-  <header>
-    <div class="logo">Lead<span>Desk</span></div>
-    <div class="badge"><span class="badge-dot"></span> Accepting Partners</div>
-  </header>
+<!-- HEADER -->
+<header>
+  <div class="logo">Lead<span>Desk</span></div>
+  <div class="badge" onclick="goToPartner()"><span class="badge-dot"></span> Accepting Partners</div>
+</header>
 
-  <!-- PROGRESS -->
-  <div class="progress-wrap" id="progressWrap">
-    <div class="step-labels">
-      <span class="step-lbl active" id="lbl1">Offer</span>
-      <span class="step-lbl" id="lbl2">Company</span>
-      <span class="step-lbl" id="lbl3">Traffic</span>
-      <span class="step-lbl" id="lbl4">Review</span>
-    </div>
-    <div class="progress-track">
-      <div class="progress-fill" id="progressFill"></div>
-    </div>
+<!-- TICKER -->
+<div class="ticker-wrap" id="tickerWrap">
+  <div class="ticker-track">
+    <span class="ticker-item">📊 Live Traffic</span><span class="ticker-sep">·</span>
+    <span class="ticker-item">🗄 Bulk Data</span><span class="ticker-sep">·</span>
+    <span class="ticker-item">🗂 CRM System</span><span class="ticker-sep">·</span>
+    <span class="ticker-item">📞 VOIP Dialer</span><span class="ticker-sep">·</span>
+    <span class="ticker-item">🌍 EU · UK · Asia · LATAM · AU · GCC</span><span class="ticker-sep">·</span>
+    <span class="ticker-item">💳 USDT TRC20 / ERC20</span><span class="ticker-sep">·</span>
+    <span class="ticker-item">⚡ Same-Day Delivery</span><span class="ticker-sep">·</span>
+    <span class="ticker-item">📊 Live Traffic</span><span class="ticker-sep">·</span>
+    <span class="ticker-item">🗄 Bulk Data</span><span class="ticker-sep">·</span>
+    <span class="ticker-item">🗂 CRM System</span><span class="ticker-sep">·</span>
+    <span class="ticker-item">📞 VOIP Dialer</span><span class="ticker-sep">·</span>
+    <span class="ticker-item">🌍 EU · UK · Asia · LATAM · AU · GCC</span><span class="ticker-sep">·</span>
+    <span class="ticker-item">💳 USDT TRC20 / ERC20</span><span class="ticker-sep">·</span>
+    <span class="ticker-item">⚡ Same-Day Delivery</span><span class="ticker-sep">·</span>
   </div>
-
-  <!-- SCREEN 1: OFFER -->
-  <div class="screen active" id="s1">
-    <div class="hero-tag">🔒 Private Traffic Source</div>
-    <h1 class="hero-title">Real <span class="hl">Forex & Crypto</span> Leads. No Fluff.</h1>
-    <p class="hero-sub">Live investor registrations straight from private funnels. Built for media buyers and brokers who are serious about performance.</p>
-
-    <div class="stat-row">
-      <div class="stat-card">
-        <div class="stat-val">0-day</div>
-        <div class="stat-label">Lead Age</div>
-      </div>
-      <div class="stat-card">
-        <div class="stat-val">6+</div>
-        <div class="stat-label">GEO Regions</div>
-      </div>
-      <div class="stat-card">
-        <div class="stat-val">3x</div>
-        <div class="stat-label">Models</div>
-      </div>
-    </div>
-
-    <div class="feature-list">
-      <div class="feature-item">
-        <div class="feat-icon-wrap">⚡</div>
-        <div class="feat-body">
-          <div class="feat-title">Real-Time Registrations</div>
-          <div class="feat-desc">Active users entering funnels now. Timestamped and autologin validated on delivery.</div>
-        </div>
-      </div>
-      <div class="feature-item">
-        <div class="feat-icon-wrap">🔒</div>
-        <div class="feat-body">
-          <div class="feat-title">Private, Non-Resold Traffic</div>
-          <div class="feat-desc">No recycled databases. No bots. No incentive traffic. Exclusive supply per partner.</div>
-        </div>
-      </div>
-      <div class="feature-item">
-        <div class="feat-icon-wrap">🌍</div>
-        <div class="feat-body">
-          <div class="feat-title">Available GEOs</div>
-          <div class="feat-desc">
-            <div class="geo-row">
-              <span class="geo-pill">🇪🇺 EU</span>
-              <span class="geo-pill">🇬🇧 UK</span>
-              <span class="geo-pill">🌏 Asia</span>
-              <span class="geo-pill">🌎 LATAM</span>
-              <span class="geo-pill">🇦🇺 AU</span>
-              <span class="geo-pill">🌍 Tier-2/3</span>
-              <span class="geo-pill na">🇩🇪 DE</span>
-            </div>
-          </div>
-        </div>
-      </div>
-      <div class="feature-item">
-        <div class="feat-icon-wrap">💳</div>
-        <div class="feat-body">
-          <div class="feat-title">Payment</div>
-          <div class="feat-desc">USDT (TRC20 / ERC20). Prepay for first launch. Flexible terms after validation.</div>
-        </div>
-      </div>
-    </div>
-
-    <button class="btn-primary" onclick="goTo(2)">Start Onboarding →</button>
-  </div>
-
-  <!-- SCREEN 2: COMPANY -->
-  <div class="screen" id="s2">
-    <div class="sec-tag">Step 1 of 3</div>
-    <h2 class="sec-title">About Your Company</h2>
-    <p class="sec-sub">We vet all partners before onboarding. Provide accurate details to avoid delays.</p>
-
-    <div class="field">
-      <label class="field-label">What are you? <span class="req">*</span></label>
-      <div class="radio-group">
-        <div class="radio-item" onclick="selectRadio('companyType','brand',this)">
-          <div class="radio-circle"><div class="radio-inner"></div></div>
-          <div class="radio-content">
-            <div class="radio-title">🏢 Brand / Direct Advertiser</div>
-            <div class="radio-desc">You own your offers and trading platform</div>
-          </div>
-        </div>
-        <div class="radio-item" onclick="selectRadio('companyType','network',this)">
-          <div class="radio-circle"><div class="radio-inner"></div></div>
-          <div class="radio-content">
-            <div class="radio-title">🌐 Network / Affiliate</div>
-            <div class="radio-desc">You manage traffic for multiple advertisers</div>
-          </div>
-        </div>
-        <div class="radio-item" onclick="selectRadio('companyType','broker',this)">
-          <div class="radio-circle"><div class="radio-inner"></div></div>
-          <div class="radio-content">
-            <div class="radio-title">📊 Broker / Media Buyer</div>
-            <div class="radio-desc">You buy and redistribute leads or traffic</div>
-          </div>
-        </div>
-      </div>
-      <div class="field-error" id="err-companyType">Please select one option</div>
-    </div>
-
-    <div class="field">
-      <label class="field-label">Company / Brand name <span class="req">*</span></label>
-      <input type="text" id="companyName" placeholder="e.g. TradeMax Group">
-      <div class="field-error" id="err-companyName">This field is required</div>
-    </div>
-
-    <div class="field">
-      <label class="field-label">References <span class="req">*</span></label>
-      <textarea id="references" placeholder="List companies, brokers, or networks you've previously worked with. The more detail the better."></textarea>
-      <div class="field-error" id="err-references">Please provide at least one reference</div>
-    </div>
-
-    <button class="btn-primary" onclick="validateS2()">Continue →</button>
-    <button class="btn-ghost" onclick="goTo(1)">← Back</button>
-  </div>
-
-  <!-- SCREEN 3: TRAFFIC -->
-  <div class="screen" id="s3">
-    <div class="sec-tag">Step 2 of 3</div>
-    <h2 class="sec-title">Traffic Requirements</h2>
-    <p class="sec-sub">Be specific. This helps us assign the right supply from day one.</p>
-
-    <div class="field">
-      <label class="field-label">GEOs you work with <span class="req">*</span></label>
-      <div class="check-grid">
-        <div class="check-item" onclick="toggleCheck(this,'geos','EU')"><div class="check-box">✓</div><span class="check-label">🇪🇺 EU</span></div>
-        <div class="check-item" onclick="toggleCheck(this,'geos','UK')"><div class="check-box">✓</div><span class="check-label">🇬🇧 UK</span></div>
-        <div class="check-item" onclick="toggleCheck(this,'geos','Asia')"><div class="check-box">✓</div><span class="check-label">🌏 Asia</span></div>
-        <div class="check-item" onclick="toggleCheck(this,'geos','LATAM')"><div class="check-box">✓</div><span class="check-label">🌎 LATAM</span></div>
-        <div class="check-item" onclick="toggleCheck(this,'geos','AU')"><div class="check-box">✓</div><span class="check-label">🇦🇺 Australia</span></div>
-        <div class="check-item" onclick="toggleCheck(this,'geos','Tier2/3')"><div class="check-box">✓</div><span class="check-label">🌍 Tier-2/3</span></div>
-      </div>
-      <div class="field-error" id="err-geos">Select at least one GEO</div>
-    </div>
-
-    <div class="field">
-      <label class="field-label">Lead type <span class="req">*</span></label>
-      <div class="check-grid">
-        <div class="check-item" onclick="toggleCheck(this,'leadTypes','Hot')"><div class="check-box">✓</div><span class="check-label">🔥 Hot</span></div>
-        <div class="check-item" onclick="toggleCheck(this,'leadTypes','Warm')"><div class="check-box">✓</div><span class="check-label">♨️ Warm</span></div>
-        <div class="check-item" onclick="toggleCheck(this,'leadTypes','Data')"><div class="check-box">✓</div><span class="check-label">📊 Data</span></div>
-        <div class="check-item" onclick="toggleCheck(this,'leadTypes','Recovery')"><div class="check-box">✓</div><span class="check-label">♻️ Recovery</span></div>
-      </div>
-      <div class="field-error" id="err-leadTypes">Select at least one type</div>
-    </div>
-
-    <div class="field">
-      <label class="field-label">Expected daily volume <span class="req">*</span></label>
-      <div class="volume-card">
-        <div class="vol-number" id="volDisplay">50</div>
-        <div class="vol-unit">Leads / Day</div>
-      </div>
-      <input type="range" id="volSlider" min="10" max="500" step="10" value="50"
-             oninput="document.getElementById('volDisplay').textContent=this.value">
-    </div>
-
-    <div class="field">
-      <label class="field-label">Preferred model <span class="req">*</span></label>
-      <div class="radio-group">
-        <div class="radio-item" onclick="selectRadio('model','CPL',this)">
-          <div class="radio-circle"><div class="radio-inner"></div></div>
-          <div class="radio-content">
-            <div class="radio-title">CPL — Cost Per Lead</div>
-            <div class="radio-desc">Pay per validated registration delivered</div>
-          </div>
-        </div>
-        <div class="radio-item" onclick="selectRadio('model','CPA',this)">
-          <div class="radio-circle"><div class="radio-inner"></div></div>
-          <div class="radio-content">
-            <div class="radio-title">CPA — Cost Per Action</div>
-            <div class="radio-desc">Pay on deposit or conversion event</div>
-          </div>
-        </div>
-        <div class="radio-item" onclick="selectRadio('model','CRG',this)">
-          <div class="radio-circle"><div class="radio-inner"></div></div>
-          <div class="radio-content">
-            <div class="radio-title">CRG — Cost Per Revenue</div>
-            <div class="radio-desc">Revenue share hybrid model</div>
-          </div>
-        </div>
-      </div>
-      <div class="field-error" id="err-model">Please select a model</div>
-    </div>
-
-    <button class="btn-primary" onclick="validateS3()">Review My Order →</button>
-    <button class="btn-ghost" onclick="goTo(2)">← Back</button>
-  </div>
-
-  <!-- SCREEN 4: REVIEW -->
-  <div class="screen" id="s4">
-    <div class="sec-tag">Step 3 of 3</div>
-    <h2 class="sec-title">Review & Submit</h2>
-    <p class="sec-sub">Double check your details. Our team will review and reach out within 24 hours.</p>
-
-    <div class="summary-card">
-      <div class="summary-head">
-        <span class="summary-head-text">📋 Order Summary</span>
-      </div>
-      <div id="summaryBox"></div>
-    </div>
-
-    <div class="notice">
-      💡 <strong>Prepay Policy:</strong> All new partners begin with prepay for the first launch. Once a working relationship is established, alternative structures can be discussed.
-    </div>
-
-    <button class="btn-primary" id="submitBtn" onclick="submitOrder()">
-      <span id="submitText">Submit Request</span>
-      <span id="submitSpinner" class="spinner" style="display:none"></span>
-    </button>
-    <button class="btn-ghost" onclick="goTo(3)">← Edit Details</button>
-  </div>
-
-  <!-- SCREEN 5: SUCCESS -->
-  <div class="screen" id="s5">
-    <div class="success-wrap">
-      <div class="success-top">
-        <div class="success-icon">✅</div>
-        <div class="success-title">Request Received</div>
-        <p class="success-sub">Thank you for your interest in LeadDesk. Our sales team has been notified and will be in touch with you shortly.</p>
-      </div>
-      <div class="next-steps">
-        <div class="next-step">
-          <div class="step-num-wrap">1</div>
-          <div class="step-body">
-            <strong>Under Review</strong>
-            <span>We're reviewing your GEOs, volume, and references</span>
-          </div>
-        </div>
-        <div class="next-step">
-          <div class="step-num-wrap">2</div>
-          <div class="step-body">
-            <strong>We'll Contact You</strong>
-            <span>A sales agent will reach out on Telegram shortly</span>
-          </div>
-        </div>
-        <div class="next-step">
-          <div class="step-num-wrap">3</div>
-          <div class="step-body">
-            <strong>Launch</strong>
-            <span>CRM setup → prepay → same-day traffic begins</span>
-          </div>
-        </div>
-      </div>
-    </div>
-  </div>
-
 </div>
 
+<!-- FLOW PROGRESS -->
+<div class="flow-progress" id="flowProgress">
+  <div class="flow-steps">
+    <span class="flow-step-lbl active" id="flbl1">Company</span>
+    <span class="flow-step-lbl" id="flbl2">Requirements</span>
+    <span class="flow-step-lbl" id="flbl3">Review</span>
+  </div>
+  <div class="flow-track"><div class="flow-fill" id="flowFill"></div></div>
+</div>
+
+<!-- ═══════════════════════════════════════ -->
+<!-- SCREEN 1: HOME                          -->
+<!-- ═══════════════════════════════════════ -->
+<div class="screen active" id="s1">
+  <div class="hero-tag">🔒 Private Traffic Source</div>
+  <h1 class="hero-title">Real <span class="hl">Forex & Crypto</span> Leads. No Fluff.</h1>
+  <p class="hero-sub">Live investor registrations from private funnels. Pick your product below and get started — our team responds within 24 hours.</p>
+
+  <div class="stat-row">
+    <div class="stat-card"><div class="stat-val">0-day</div><div class="stat-label">Lead Age</div></div>
+    <div class="stat-card"><div class="stat-val">6+</div><div class="stat-label">GEO Regions</div></div>
+    <div class="stat-card"><div class="stat-val">4</div><div class="stat-label">Products</div></div>
+  </div>
+
+  <button class="btn-start-onboarding" onclick="goToScreen('p-general')">
+    Start Onboarding →
+  </button>
+
+  <div class="prod-grid-label">Or go directly to a product:</div>
+
+  <div class="prod-grid">
+    <div class="prod-card" onclick="goToScreen('p-leads')">
+      <div class="prod-arrow">→</div>
+      <div class="prod-icon">📊</div>
+      <div class="prod-name">Leads</div>
+      <div class="prod-desc">CPL · CPA · CRG<br>Live forex & crypto registrations</div>
+      <div class="prod-tag">Core Product</div>
+    </div>
+    <div class="prod-card" onclick="goToScreen('p-crm')">
+      <div class="prod-arrow">→</div>
+      <div class="prod-icon">🗂</div>
+      <div class="prod-name">CRM</div>
+      <div class="prod-desc">Full trading CRM<br>Lead management & retention</div>
+      <div class="prod-tag prod-tag-addon">Add-on</div>
+    </div>
+    <div class="prod-card" onclick="goToScreen('p-platform')">
+      <div class="prod-arrow">→</div>
+      <div class="prod-icon">🖥</div>
+      <div class="prod-name">Platform</div>
+      <div class="prod-desc">White-label trading platform<br>MT4/MT5 compatible</div>
+      <div class="prod-tag prod-tag-addon">Add-on</div>
+    </div>
+    <div class="prod-card" onclick="goToScreen('p-voip')">
+      <div class="prod-arrow">→</div>
+      <div class="prod-icon">📞</div>
+      <div class="prod-name">VOIP</div>
+      <div class="prod-desc">Sales dialer & phone system<br>Integrated with CRM</div>
+      <div class="prod-tag prod-tag-addon">Add-on</div>
+    </div>
+  </div>
+
+  <div class="feature-list">
+    <div class="feature-item">
+      <div class="feat-icon-wrap">⚡</div>
+      <div class="feat-body">
+        <div class="feat-title">Real-Time Registrations</div>
+        <div class="feat-desc">Active users entering funnels now. Timestamped and autologin validated on delivery.</div>
+      </div>
+    </div>
+    <div class="feature-item">
+      <div class="feat-icon-wrap">🔒</div>
+      <div class="feat-body">
+        <div class="feat-title">Private, Non-Resold Traffic</div>
+        <div class="feat-desc">No recycled databases. No bots. No incentive traffic. Exclusive supply per partner.</div>
+      </div>
+    </div>
+    <div class="feature-item">
+      <div class="feat-icon-wrap">🌍</div>
+      <div class="feat-body">
+        <div class="feat-title">Available GEOs</div>
+        <div class="feat-desc">
+          <div class="geo-row">
+            <span class="geo-pill">EU</span><span class="geo-pill">UK</span>
+            <span class="geo-pill">Asia</span><span class="geo-pill">LATAM</span>
+            <span class="geo-pill">AU</span><span class="geo-pill">Tier-2/3</span>
+            <span class="geo-pill">GCC</span><span class="geo-pill na">DE ✗</span>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="feature-item">
+      <div class="feat-icon-wrap">💳</div>
+      <div class="feat-body">
+        <div class="feat-title">Payment</div>
+        <div class="feat-desc">USDT (TRC20 / ERC20). Prepay required for all new brands.</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════ -->
+<!-- SCREEN P-GENERAL: GENERAL INQUIRY     -->
+<!-- ═══════════════════════════════════════ -->
+<div class="screen" id="p-general">
+  <button class="btn-back-link" onclick="goHome()">← Back</button>
+  <div class="hero-tag">🚀 General Onboarding</div>
+  <h2 class="sec-title">Start Your <span class="hl">Inquiry</span></h2>
+  <p class="sec-sub">Select the products you're interested in — pick one or all four. Our team will put together the right package for you.</p>
+
+  <div class="field">
+    <label class="field-label">I'm interested in <span class="req">*</span></label>
+    <div class="gen-prod-grid">
+      <div class="gen-prod-card" id="gp-leads" onclick="toggleGenProd('leads',this)">
+        <div class="gen-prod-check" id="gpc-leads"></div>
+        <div class="gen-prod-icon">📊</div>
+        <div class="gen-prod-name">Leads</div>
+        <div class="gen-prod-sub">CPL · CPA · CRG</div>
+      </div>
+      <div class="gen-prod-card" id="gp-crm" onclick="toggleGenProd('crm',this)">
+        <div class="gen-prod-check" id="gpc-crm"></div>
+        <div class="gen-prod-icon">🗂</div>
+        <div class="gen-prod-name">CRM</div>
+        <div class="gen-prod-sub">Trading CRM</div>
+      </div>
+      <div class="gen-prod-card" id="gp-platform" onclick="toggleGenProd('platform',this)">
+        <div class="gen-prod-check" id="gpc-platform"></div>
+        <div class="gen-prod-icon">🖥</div>
+        <div class="gen-prod-name">Platform</div>
+        <div class="gen-prod-sub">White-label MT4/5</div>
+      </div>
+      <div class="gen-prod-card" id="gp-voip" onclick="toggleGenProd('voip',this)">
+        <div class="gen-prod-check" id="gpc-voip"></div>
+        <div class="gen-prod-icon">📞</div>
+        <div class="gen-prod-name">VOIP</div>
+        <div class="gen-prod-sub">Sales Dialer</div>
+      </div>
+    </div>
+    <div class="field-error" id="err-gen-products">Please select at least one product</div>
+  </div>
+
+  <div class="field">
+    <label class="field-label">Company / Brand name <span class="req">*</span></label>
+    <input type="text" id="gen-company" placeholder="e.g. TradeMax Group">
+    <div class="field-error" id="err-gen-company">Required</div>
+  </div>
+
+  <div class="field">
+    <label class="field-label">You are a <span class="req">*</span></label>
+    <div class="radio-group">
+      <div class="radio-item" onclick="selR('gen-type','Direct Broker',this)">
+        <div class="radio-circle"><div class="radio-inner"></div></div>
+        <div class="radio-content"><div class="radio-title">Direct Broker</div><div class="radio-desc">You operate your own trading brand</div></div>
+      </div>
+      <div class="radio-item" onclick="selR('gen-type','Affiliate Network',this)">
+        <div class="radio-circle"><div class="radio-inner"></div></div>
+        <div class="radio-content"><div class="radio-title">Affiliate Network</div><div class="radio-desc">You manage traffic for multiple brokers</div></div>
+      </div>
+      <div class="radio-item" onclick="selR('gen-type','Media Buyer',this)">
+        <div class="radio-circle"><div class="radio-inner"></div></div>
+        <div class="radio-content"><div class="radio-title">Media Buyer / Reseller</div><div class="radio-desc">You buy and redistribute leads</div></div>
+      </div>
+      <div class="radio-item" onclick="selR('gen-type','Other',this)">
+        <div class="radio-circle"><div class="radio-inner"></div></div>
+        <div class="radio-content"><div class="radio-title">Other</div><div class="radio-desc">I'll explain in the notes below</div></div>
+      </div>
+    </div>
+    <div class="field-error" id="err-gen-type">Please select one</div>
+  </div>
+
+  <div class="field">
+    <label class="field-label">GEOs you work with</label>
+    <div class="check-grid">
+      <div class="check-item" onclick="selC(this,'gen-geos','EU')"><div class="check-box">✓</div><span class="check-label">EU</span></div>
+      <div class="check-item" onclick="selC(this,'gen-geos','UK')"><div class="check-box">✓</div><span class="check-label">UK</span></div>
+      <div class="check-item" onclick="selC(this,'gen-geos','Asia')"><div class="check-box">✓</div><span class="check-label">Asia</span></div>
+      <div class="check-item" onclick="selC(this,'gen-geos','LATAM')"><div class="check-box">✓</div><span class="check-label">LATAM</span></div>
+      <div class="check-item" onclick="selC(this,'gen-geos','AU')"><div class="check-box">✓</div><span class="check-label">AU</span></div>
+      <div class="check-item" onclick="selC(this,'gen-geos','GCC')"><div class="check-box">✓</div><span class="check-label">GCC</span></div>
+    </div>
+  </div>
+
+  <div class="field">
+    <label class="field-label">Tell us more / References</label>
+    <textarea id="gen-notes" placeholder="Previous suppliers, brokers you've worked with, specific requirements, budget range..."></textarea>
+  </div>
+
+  <button class="btn-primary" onclick="submitGeneral()">
+    <span id="gen-btn-text">Submit Inquiry</span>
+    <span id="gen-spinner" class="spinner" style="display:none"></span>
+  </button>
+  <button class="btn-ghost" onclick="goHome()">← Back</button>
+</div>
+
+<!-- ═══════════════════════════════════════ -->
+<!-- SCREEN P-LEADS: LEADS SIGNUP          -->
+<!-- ═══════════════════════════════════════ -->
+<div class="screen" id="p-leads">
+  <button class="btn-back-link" onclick="goHome()">← Back</button>
+  <div class="prod-screen-header">
+    <div class="prod-screen-icon">📊</div>
+    <div>
+      <div class="prod-screen-title">Live Traffic — Leads</div>
+      <div class="prod-screen-sub">CPL · CPA · CRG · Forex & Crypto</div>
+    </div>
+  </div>
+
+  <div class="field">
+    <label class="field-label">Company / Brand name <span class="req">*</span></label>
+    <input type="text" id="l-company" placeholder="e.g. TradeMax Group">
+    <div class="field-error" id="err-l-company">Required</div>
+  </div>
+
+  <div class="field">
+    <label class="field-label">You are a <span class="req">*</span></label>
+    <div class="radio-group">
+      <div class="radio-item" onclick="selR('l-type','Direct Broker',this)">
+        <div class="radio-circle"><div class="radio-inner"></div></div>
+        <div class="radio-content"><div class="radio-title">Direct Broker</div><div class="radio-desc">You operate your own trading brand</div></div>
+      </div>
+      <div class="radio-item" onclick="selR('l-type','Affiliate Network',this)">
+        <div class="radio-circle"><div class="radio-inner"></div></div>
+        <div class="radio-content"><div class="radio-title">Affiliate Network</div><div class="radio-desc">You manage traffic for multiple brokers</div></div>
+      </div>
+      <div class="radio-item" onclick="selR('l-type','Media Buyer',this)">
+        <div class="radio-circle"><div class="radio-inner"></div></div>
+        <div class="radio-content"><div class="radio-title">Media Buyer / Reseller</div><div class="radio-desc">You buy and redistribute leads</div></div>
+      </div>
+    </div>
+    <div class="field-error" id="err-l-type">Please select one</div>
+  </div>
+
+  <div class="field">
+    <label class="field-label">GEOs required <span class="req">*</span></label>
+    <div class="check-grid">
+      <div class="check-item" onclick="selC(this,'l-geos','EU')"><div class="check-box">✓</div><span class="check-label">EU</span></div>
+      <div class="check-item" onclick="selC(this,'l-geos','UK')"><div class="check-box">✓</div><span class="check-label">UK</span></div>
+      <div class="check-item" onclick="selC(this,'l-geos','Asia')"><div class="check-box">✓</div><span class="check-label">Asia</span></div>
+      <div class="check-item" onclick="selC(this,'l-geos','LATAM')"><div class="check-box">✓</div><span class="check-label">LATAM</span></div>
+      <div class="check-item" onclick="selC(this,'l-geos','AU')"><div class="check-box">✓</div><span class="check-label">AU</span></div>
+      <div class="check-item" onclick="selC(this,'l-geos','GCC')"><div class="check-box">✓</div><span class="check-label">GCC</span></div>
+      <div class="check-item" onclick="selC(this,'l-geos','Tier-2/3')"><div class="check-box">✓</div><span class="check-label">Tier-2/3</span></div>
+    </div>
+    <div class="field-error" id="err-l-geos">Select at least one GEO</div>
+  </div>
+
+  <div class="field">
+    <label class="field-label">Pricing model <span class="req">*</span></label>
+    <div class="radio-group">
+      <div class="radio-item" onclick="selR('l-model','CPL',this)">
+        <div class="radio-circle"><div class="radio-inner"></div></div>
+        <div class="radio-content"><div class="radio-title">CPL — Cost Per Lead</div><div class="radio-desc">Pay per validated registration delivered</div></div>
+      </div>
+      <div class="radio-item" onclick="selR('l-model','CPA',this)">
+        <div class="radio-circle"><div class="radio-inner"></div></div>
+        <div class="radio-content"><div class="radio-title">CPA — Cost Per Action</div><div class="radio-desc">Pay on deposit or FTD event</div></div>
+      </div>
+      <div class="radio-item" onclick="selR('l-model','CRG',this)">
+        <div class="radio-circle"><div class="radio-inner"></div></div>
+        <div class="radio-content"><div class="radio-title">CRG — Cost Per Revenue</div><div class="radio-desc">Revenue share hybrid model</div></div>
+      </div>
+    </div>
+    <div class="field-error" id="err-l-model">Please select a model</div>
+  </div>
+
+  <div class="field">
+    <label class="field-label">Daily volume needed <span class="req">*</span></label>
+    <div class="volume-card">
+      <div class="vol-number" id="l-vol-display">50</div>
+      <div class="vol-unit">Leads / Day</div>
+    </div>
+    <input type="range" id="l-volume" min="10" max="500" step="10" value="50" oninput="document.getElementById('l-vol-display').textContent=this.value">
+  </div>
+
+  <div class="field">
+    <label class="field-label">Lead type <span class="req">*</span></label>
+    <div class="check-grid">
+      <div class="check-item" onclick="selC(this,'l-leadtype','Hot')"><div class="check-box">✓</div><span class="check-label">🔥 Hot</span></div>
+      <div class="check-item" onclick="selC(this,'l-leadtype','Warm')"><div class="check-box">✓</div><span class="check-label">♨️ Warm</span></div>
+      <div class="check-item" onclick="selC(this,'l-leadtype','Data')"><div class="check-box">✓</div><span class="check-label">📊 Data</span></div>
+      <div class="check-item" onclick="selC(this,'l-leadtype','Recovery')"><div class="check-box">✓</div><span class="check-label">♻️ Recovery</span></div>
+    </div>
+    <div class="field-error" id="err-l-leadtype">Select at least one</div>
+  </div>
+
+  <div class="field">
+    <label class="field-label">Trading platform used</label>
+    <select id="l-platform">
+      <option value="">Select platform</option>
+      <option>MT4</option><option>MT5</option><option>cTrader</option>
+      <option>Proprietary</option><option>Other</option>
+    </select>
+  </div>
+
+  <div class="field">
+    <label class="field-label">References / Previous suppliers <span class="req">*</span></label>
+    <textarea id="l-refs" placeholder="List brokers, networks or suppliers you've worked with previously."></textarea>
+    <div class="field-error" id="err-l-refs">Please provide at least one reference</div>
+  </div>
+
+  <button class="btn-primary" onclick="submitProduct('Leads')">
+    <span id="leads-btn-text">Submit Lead Request</span>
+    <span id="leads-spinner" class="spinner" style="display:none"></span>
+  </button>
+  <button class="btn-ghost" onclick="goHome()">← Back</button>
+</div>
+
+<!-- ═══════════════════════════════════════ -->
+<!-- SCREEN P-CRM: CRM SIGNUP              -->
+<!-- ═══════════════════════════════════════ -->
+<div class="screen" id="p-crm">
+  <button class="btn-back-link" onclick="goHome()">← Back</button>
+  <div class="prod-screen-header">
+    <div class="prod-screen-icon">🗂</div>
+    <div>
+      <div class="prod-screen-title">CRM System</div>
+      <div class="prod-screen-sub">Trading CRM for forex & crypto brokers</div>
+    </div>
+  </div>
+
+  <div class="info-card">
+    <div class="info-icon">💡</div>
+    <div class="info-body">
+      <div class="info-title">What's included</div>
+      <div class="info-desc">Lead management · KYC/AML workflows · MT4/MT5 integration · IB & affiliate tracking · Sales team dashboards · Retention tools · Reporting suite</div>
+    </div>
+  </div>
+
+  <div class="field">
+    <label class="field-label">Company / Brokerage name <span class="req">*</span></label>
+    <input type="text" id="crm-company" placeholder="e.g. Apex Markets Ltd">
+    <div class="field-error" id="err-crm-company">Required</div>
+  </div>
+
+  <div class="field">
+    <label class="field-label">Brokerage type <span class="req">*</span></label>
+    <div class="radio-group">
+      <div class="radio-item" onclick="selR('crm-type','Startup Broker',this)">
+        <div class="radio-circle"><div class="radio-inner"></div></div>
+        <div class="radio-content"><div class="radio-title">Startup Broker</div><div class="radio-desc">Launching or newly launched, under 6 months</div></div>
+      </div>
+      <div class="radio-item" onclick="selR('crm-type','Established Broker',this)">
+        <div class="radio-circle"><div class="radio-inner"></div></div>
+        <div class="radio-content"><div class="radio-title">Established Broker</div><div class="radio-desc">Live operation, migrating from another CRM</div></div>
+      </div>
+      <div class="radio-item" onclick="selR('crm-type','White Label',this)">
+        <div class="radio-circle"><div class="radio-inner"></div></div>
+        <div class="radio-content"><div class="radio-title">White Label / IB</div><div class="radio-desc">Operating under another broker's license</div></div>
+      </div>
+    </div>
+    <div class="field-error" id="err-crm-type">Please select one</div>
+  </div>
+
+  <div class="field">
+    <label class="field-label">Trading platform <span class="req">*</span></label>
+    <div class="check-grid">
+      <div class="check-item" onclick="selC(this,'crm-platform','MT4')"><div class="check-box">✓</div><span class="check-label">MT4</span></div>
+      <div class="check-item" onclick="selC(this,'crm-platform','MT5')"><div class="check-box">✓</div><span class="check-label">MT5</span></div>
+      <div class="check-item" onclick="selC(this,'crm-platform','cTrader')"><div class="check-box">✓</div><span class="check-label">cTrader</span></div>
+      <div class="check-item" onclick="selC(this,'crm-platform','Other')"><div class="check-box">✓</div><span class="check-label">Other</span></div>
+    </div>
+    <div class="field-error" id="err-crm-platform">Select at least one</div>
+  </div>
+
+  <div class="field">
+    <label class="field-label">Number of sales agents <span class="req">*</span></label>
+    <select id="crm-seats">
+      <option value="">Select team size</option>
+      <option>1–5 agents</option><option>6–15 agents</option>
+      <option>16–30 agents</option><option>30–50 agents</option>
+      <option>50+ agents</option>
+    </select>
+    <div class="field-error" id="err-crm-seats">Please select team size</div>
+  </div>
+
+  <div class="field">
+    <label class="field-label">Features needed</label>
+    <div class="check-grid">
+      <div class="check-item" onclick="selC(this,'crm-features','KYC/AML')"><div class="check-box">✓</div><span class="check-label">KYC / AML</span></div>
+      <div class="check-item" onclick="selC(this,'crm-features','IB Module')"><div class="check-box">✓</div><span class="check-label">IB Module</span></div>
+      <div class="check-item" onclick="selC(this,'crm-features','Client Portal')"><div class="check-box">✓</div><span class="check-label">Client Portal</span></div>
+      <div class="check-item" onclick="selC(this,'crm-features','VOIP Integration')"><div class="check-box">✓</div><span class="check-label">VOIP Integration</span></div>
+      <div class="check-item" onclick="selC(this,'crm-features','Reporting')"><div class="check-box">✓</div><span class="check-label">Reporting</span></div>
+      <div class="check-item" onclick="selC(this,'crm-features','Multi-brand')"><div class="check-box">✓</div><span class="check-label">Multi-brand</span></div>
+    </div>
+  </div>
+
+  <div class="field">
+    <label class="field-label">Current CRM / system used</label>
+    <input type="text" id="crm-current" placeholder="e.g. FX Back Office, B2Core, Salesforce, none">
+  </div>
+
+  <div class="field">
+    <label class="field-label">Anything else to know?</label>
+    <textarea id="crm-notes" placeholder="Regulatory jurisdiction, special integrations, migration timeline..."></textarea>
+  </div>
+
+  <button class="btn-primary" onclick="submitProduct('CRM')">
+    <span id="crm-btn-text">Request CRM Setup</span>
+    <span id="crm-spinner" class="spinner" style="display:none"></span>
+  </button>
+  <button class="btn-ghost" onclick="goHome()">← Back</button>
+</div>
+
+<!-- ═══════════════════════════════════════ -->
+<!-- SCREEN P-PLATFORM: PLATFORM SIGNUP    -->
+<!-- ═══════════════════════════════════════ -->
+<div class="screen" id="p-platform">
+  <button class="btn-back-link" onclick="goHome()">← Back</button>
+  <div class="prod-screen-header">
+    <div class="prod-screen-icon">🖥</div>
+    <div>
+      <div class="prod-screen-title">Trading Platform</div>
+      <div class="prod-screen-sub">White-label MT4/MT5 & proprietary solutions</div>
+    </div>
+  </div>
+
+  <div class="info-card">
+    <div class="info-icon">💡</div>
+    <div class="info-body">
+      <div class="info-title">What's included</div>
+      <div class="info-desc">White-label setup · Custom branding · Liquidity bridge · Web trader · Mobile apps · Back-office admin · Full support</div>
+    </div>
+  </div>
+
+  <div class="field">
+    <label class="field-label">Company / Brokerage name <span class="req">*</span></label>
+    <input type="text" id="pl-company" placeholder="e.g. NovaTrade Ltd">
+    <div class="field-error" id="err-pl-company">Required</div>
+  </div>
+
+  <div class="field">
+    <label class="field-label">Platform type needed <span class="req">*</span></label>
+    <div class="radio-group">
+      <div class="radio-item" onclick="selR('pl-type','MT4 White Label',this)">
+        <div class="radio-circle"><div class="radio-inner"></div></div>
+        <div class="radio-content"><div class="radio-title">MT4 White Label</div><div class="radio-desc">Most widely used retail forex platform</div></div>
+      </div>
+      <div class="radio-item" onclick="selR('pl-type','MT5 White Label',this)">
+        <div class="radio-circle"><div class="radio-inner"></div></div>
+        <div class="radio-content"><div class="radio-title">MT5 White Label</div><div class="radio-desc">Multi-asset platform, stocks & crypto</div></div>
+      </div>
+      <div class="radio-item" onclick="selR('pl-type','Proprietary Platform',this)">
+        <div class="radio-circle"><div class="radio-inner"></div></div>
+        <div class="radio-content"><div class="radio-title">Proprietary Platform</div><div class="radio-desc">Custom-built trading interface</div></div>
+      </div>
+      <div class="radio-item" onclick="selR('pl-type','Not Sure Yet',this)">
+        <div class="radio-circle"><div class="radio-inner"></div></div>
+        <div class="radio-content"><div class="radio-title">Not Sure Yet</div><div class="radio-desc">I need guidance on the right fit</div></div>
+      </div>
+    </div>
+    <div class="field-error" id="err-pl-type">Please select one</div>
+  </div>
+
+  <div class="field">
+    <label class="field-label">Assets to offer clients</label>
+    <div class="check-grid">
+      <div class="check-item" onclick="selC(this,'pl-assets','Forex')"><div class="check-box">✓</div><span class="check-label">Forex</span></div>
+      <div class="check-item" onclick="selC(this,'pl-assets','Crypto CFDs')"><div class="check-box">✓</div><span class="check-label">Crypto CFDs</span></div>
+      <div class="check-item" onclick="selC(this,'pl-assets','Stocks')"><div class="check-box">✓</div><span class="check-label">Stocks</span></div>
+      <div class="check-item" onclick="selC(this,'pl-assets','Commodities')"><div class="check-box">✓</div><span class="check-label">Commodities</span></div>
+      <div class="check-item" onclick="selC(this,'pl-assets','Indices')"><div class="check-box">✓</div><span class="check-label">Indices</span></div>
+      <div class="check-item" onclick="selC(this,'pl-assets','Metals')"><div class="check-box">✓</div><span class="check-label">Metals</span></div>
+    </div>
+  </div>
+
+  <div class="field">
+    <label class="field-label">Launch timeline <span class="req">*</span></label>
+    <select id="pl-timeline">
+      <option value="">Select timeline</option>
+      <option>ASAP (under 30 days)</option>
+      <option>1–3 months</option>
+      <option>3–6 months</option>
+      <option>Just researching</option>
+    </select>
+    <div class="field-error" id="err-pl-timeline">Please select a timeline</div>
+  </div>
+
+  <div class="field">
+    <label class="field-label">Regulatory status</label>
+    <select id="pl-reg">
+      <option value="">Select status</option>
+      <option>Licensed (FSA, CySEC, FCA, etc.)</option>
+      <option>In the process of licensing</option>
+      <option>Operating offshore</option>
+      <option>Not yet decided</option>
+    </select>
+  </div>
+
+  <div class="field">
+    <label class="field-label">Additional notes</label>
+    <textarea id="pl-notes" placeholder="Liquidity providers, special requirements, existing infrastructure..."></textarea>
+  </div>
+
+  <button class="btn-primary" onclick="submitProduct('Platform')">
+    <span id="platform-btn-text">Request Platform Setup</span>
+    <span id="platform-spinner" class="spinner" style="display:none"></span>
+  </button>
+  <button class="btn-ghost" onclick="goHome()">← Back</button>
+</div>
+
+<!-- ═══════════════════════════════════════ -->
+<!-- SCREEN P-VOIP: VOIP SIGNUP            -->
+<!-- ═══════════════════════════════════════ -->
+<div class="screen" id="p-voip">
+  <button class="btn-back-link" onclick="goHome()">← Back</button>
+  <div class="prod-screen-header">
+    <div class="prod-screen-icon">📞</div>
+    <div>
+      <div class="prod-screen-title">VOIP Dialer</div>
+      <div class="prod-screen-sub">Sales phone system for trading floors</div>
+    </div>
+  </div>
+
+  <div class="info-card">
+    <div class="info-icon">💡</div>
+    <div class="info-body">
+      <div class="info-title">What's included</div>
+      <div class="info-desc">Power dialer · Local caller IDs per GEO · Call recording · CRM integration · Live monitoring · Disposition tagging · Agent performance reports</div>
+    </div>
+  </div>
+
+  <div class="field">
+    <label class="field-label">Company / Operation name <span class="req">*</span></label>
+    <input type="text" id="v-company" placeholder="e.g. Alpha Sales Group">
+    <div class="field-error" id="err-v-company">Required</div>
+  </div>
+
+  <div class="field">
+    <label class="field-label">Number of sales agents <span class="req">*</span></label>
+    <select id="v-agents">
+      <option value="">Select team size</option>
+      <option>1–5 agents</option><option>6–15 agents</option>
+      <option>16–30 agents</option><option>30–50 agents</option>
+      <option>50+ agents</option>
+    </select>
+    <div class="field-error" id="err-v-agents">Please select team size</div>
+  </div>
+
+  <div class="field">
+    <label class="field-label">GEOs you call into <span class="req">*</span></label>
+    <div class="check-grid">
+      <div class="check-item" onclick="selC(this,'v-geos','EU')"><div class="check-box">✓</div><span class="check-label">EU</span></div>
+      <div class="check-item" onclick="selC(this,'v-geos','UK')"><div class="check-box">✓</div><span class="check-label">UK</span></div>
+      <div class="check-item" onclick="selC(this,'v-geos','Asia')"><div class="check-box">✓</div><span class="check-label">Asia</span></div>
+      <div class="check-item" onclick="selC(this,'v-geos','LATAM')"><div class="check-box">✓</div><span class="check-label">LATAM</span></div>
+      <div class="check-item" onclick="selC(this,'v-geos','AU')"><div class="check-box">✓</div><span class="check-label">AU</span></div>
+      <div class="check-item" onclick="selC(this,'v-geos','GCC')"><div class="check-box">✓</div><span class="check-label">GCC</span></div>
+    </div>
+    <div class="field-error" id="err-v-geos">Select at least one GEO</div>
+  </div>
+
+  <div class="field">
+    <label class="field-label">Features needed</label>
+    <div class="check-grid">
+      <div class="check-item" onclick="selC(this,'v-features','Power Dialer')"><div class="check-box">✓</div><span class="check-label">Power Dialer</span></div>
+      <div class="check-item" onclick="selC(this,'v-features','Local Numbers')"><div class="check-box">✓</div><span class="check-label">Local Numbers</span></div>
+      <div class="check-item" onclick="selC(this,'v-features','Call Recording')"><div class="check-box">✓</div><span class="check-label">Call Recording</span></div>
+      <div class="check-item" onclick="selC(this,'v-features','CRM Integration')"><div class="check-box">✓</div><span class="check-label">CRM Integration</span></div>
+      <div class="check-item" onclick="selC(this,'v-features','Live Monitor')"><div class="check-box">✓</div><span class="check-label">Live Monitor</span></div>
+      <div class="check-item" onclick="selC(this,'v-features','Reporting')"><div class="check-box">✓</div><span class="check-label">Reporting</span></div>
+    </div>
+  </div>
+
+  <div class="field">
+    <label class="field-label">Current phone system used</label>
+    <input type="text" id="v-current" placeholder="e.g. Twilio, Bria, 3CX, none">
+  </div>
+
+  <div class="field">
+    <label class="field-label">CRM to integrate with</label>
+    <input type="text" id="v-crm" placeholder="e.g. LeadDesk CRM, Salesforce, B2Core, none">
+  </div>
+
+  <div class="field">
+    <label class="field-label">Additional notes</label>
+    <textarea id="v-notes" placeholder="Daily call volume, specific integrations, preferred setup timeline..."></textarea>
+  </div>
+
+  <button class="btn-primary" onclick="submitProduct('VOIP')">
+    <span id="voip-btn-text">Request VOIP Setup</span>
+    <span id="voip-spinner" class="spinner" style="display:none"></span>
+  </button>
+  <button class="btn-ghost" onclick="goHome()">← Back</button>
+</div>
+
+<!-- ═══════════════════════════════════════ -->
+<!-- SCREEN SUCCESS: PRODUCT SUBMITTED     -->
+<!-- ═══════════════════════════════════════ -->
+<div class="screen" id="s-success">
+  <div class="success-wrap">
+    <div class="success-top">
+      <div class="success-icon">✅</div>
+      <div class="success-title">Request Received</div>
+      <p class="success-sub">Your request has been submitted. Our team has been notified and will contact you on Telegram within 24 hours.</p>
+    </div>
+    <div class="next-steps">
+      <div class="next-step">
+        <div class="step-num-wrap">1</div>
+        <div class="step-body"><strong>Under Review</strong><span>We review your details and requirements</span></div>
+      </div>
+      <div class="next-step">
+        <div class="step-num-wrap">2</div>
+        <div class="step-body"><strong>We'll Contact You</strong><span>A specialist reaches out on Telegram within 24h</span></div>
+      </div>
+      <div class="next-step">
+        <div class="step-num-wrap">3</div>
+        <div class="step-body"><strong>Go Live</strong><span>Setup confirmed → prepay → launch</span></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════ -->
+<!-- SCREEN PARTNER                         -->
+<!-- ═══════════════════════════════════════ -->
+<div class="screen" id="s-partner">
+  <button class="btn-back-link" onclick="goHome()">← Back</button>
+  <div class="hero-tag">🤝 Partner Program</div>
+  <h2 class="sec-title">Become a <span class="hl">LeadDesk</span> Partner</h2>
+  <p class="sec-sub">Traffic sources, affiliates, and resellers — tell us about yourself and we'll be in touch within 24 hours.</p>
+
+  <div class="field">
+    <label class="field-label">Your name or handle <span class="req">*</span></label>
+    <input type="text" id="p-name" placeholder="e.g. John / @traderjohn">
+    <div class="field-error" id="err-p-name">Required</div>
+  </div>
+
+  <div class="field">
+    <label class="field-label">What do you bring? <span class="req">*</span></label>
+    <div class="radio-group">
+      <div class="radio-item" onclick="selR('p-type','Traffic Source',this)">
+        <div class="radio-circle"><div class="radio-inner"></div></div>
+        <div class="radio-content"><div class="radio-title">📣 Traffic Source</div><div class="radio-desc">I generate leads or drive traffic</div></div>
+      </div>
+      <div class="radio-item" onclick="selR('p-type','Affiliate',this)">
+        <div class="radio-circle"><div class="radio-inner"></div></div>
+        <div class="radio-content"><div class="radio-title">🔗 Affiliate / Referrer</div><div class="radio-desc">I refer buyers and earn commission</div></div>
+      </div>
+      <div class="radio-item" onclick="selR('p-type','Reseller',this)">
+        <div class="radio-circle"><div class="radio-inner"></div></div>
+        <div class="radio-content"><div class="radio-title">🏪 Reseller</div><div class="radio-desc">I resell LeadDesk products to clients</div></div>
+      </div>
+      <div class="radio-item" onclick="selR('p-type','Other',this)">
+        <div class="radio-circle"><div class="radio-inner"></div></div>
+        <div class="radio-content"><div class="radio-title">💡 Other</div><div class="radio-desc">Something else — I'll explain below</div></div>
+      </div>
+    </div>
+    <div class="field-error" id="err-p-type">Please select one</div>
+  </div>
+
+  <div class="field">
+    <label class="field-label">Tell us more <span class="req">*</span></label>
+    <textarea id="p-details" placeholder="What do you do, what GEOs or verticals, what volume can you bring?"></textarea>
+    <div class="field-error" id="err-p-details">Please add some details</div>
+  </div>
+
+  <button class="btn-primary" onclick="submitPartner()">
+    <span id="partner-btn-text">Send Partnership Request</span>
+    <span id="partner-spinner" class="spinner" style="display:none"></span>
+  </button>
+  <button class="btn-ghost" onclick="goHome()">← Back to Store</button>
+</div>
+
+<!-- PARTNER SUCCESS -->
+<div class="screen" id="s-partner-success">
+  <div class="success-wrap">
+    <div class="success-top">
+      <div class="success-icon">🤝</div>
+      <div class="success-title">Request Sent</div>
+      <p class="success-sub">Your partnership request has been received. We'll review your profile and reach out on Telegram shortly.</p>
+    </div>
+    <div class="next-steps">
+      <div class="next-step">
+        <div class="step-num-wrap">1</div>
+        <div class="step-body"><strong>Profile Review</strong><span>We review your background and what you bring</span></div>
+      </div>
+      <div class="next-step">
+        <div class="step-num-wrap">2</div>
+        <div class="step-body"><strong>We'll Contact You</strong><span>Our team reaches out on Telegram to discuss terms</span></div>
+      </div>
+      <div class="next-step">
+        <div class="step-num-wrap">3</div>
+        <div class="step-body"><strong>Go Live</strong><span>Agreement → partnership starts</span></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+</div><!-- /wrap -->
+
 <script>
-  const tg = window.Telegram?.WebApp;
-  if (tg) { tg.ready(); tg.expand(); }
+const tg = window.Telegram?.WebApp;
+if (tg) { tg.ready(); tg.expand(); if(tg.disableVerticalSwipes) tg.disableVerticalSwipes(); }
 
-  const BOT_TOKEN  = '8557519578:AAGwIc-a-7FwHY8H4ISXqfJyxjSn9E0IDpM';
-  const ADMIN_ID   = '1625374084';
-  const SHEETS_URL = 'YOUR_APPS_SCRIPT_WEB_APP_URL';
+const BOT_TOKEN = '8557519578:AAGwIc-a-7FwHY8H4ISXqfJyxjSn9E0IDpM';
+const ADMIN_ID  = '1625374084';
+const SHEETS_URL = 'https://script.google.com/macros/s/AKfycbxhHaKVN3pz2m-QWRH-EFBlXsHtLRXeg21ECNj4TrTrvqH1p5sariCh85HhzNUKEOIVfg/exec';
 
-  const form = {
-    companyType:'', companyName:'', references:'',
-    geos:[], leadTypes:[], volume:50, model:'',
-    tgUser:'', tgId:'',
-  };
+let tgUser = '', tgId = '';
+if (tg?.initDataUnsafe?.user) {
+  const u = tg.initDataUnsafe.user;
+  tgUser = u.username ? '@'+u.username : (u.first_name+' '+(u.last_name||'')).trim();
+  tgId   = String(u.id||'');
+}
 
-  if (tg?.initDataUnsafe?.user) {
-    const u = tg.initDataUnsafe.user;
-    form.tgUser = u.username ? '@'+u.username : (u.first_name+' '+(u.last_name||'')).trim();
-    form.tgId   = String(u.id||'');
+// Multi-value stores for checkboxes
+const checks = {};
+
+// ── Navigation ──
+function goToScreen(id) {
+  document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));
+  const el = document.getElementById(id);
+  void el.offsetWidth;
+  el.classList.add('active');
+  document.getElementById('tickerWrap').style.display = 'none';
+  document.getElementById('flowProgress').classList.remove('visible');
+  window.scrollTo({top:0,behavior:'smooth'});
+}
+
+function goHome() {
+  document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));
+  document.getElementById('s1').classList.add('active');
+  document.getElementById('tickerWrap').style.display = 'block';
+  document.getElementById('flowProgress').classList.remove('visible');
+  window.scrollTo({top:0,behavior:'smooth'});
+}
+
+function goToPartner() { goToScreen('s-partner'); }
+
+// ── Form helpers ──
+const radioState = {};
+
+function selR(field, val, el) {
+  radioState[field] = val;
+  el.closest('.radio-group').querySelectorAll('.radio-item').forEach(r=>r.classList.remove('selected'));
+  el.classList.add('selected');
+  const errEl = document.getElementById('err-'+field);
+  if (errEl) errEl.style.display = 'none';
+}
+
+function selC(el, field, val) {
+  if (!checks[field]) checks[field] = [];
+  el.classList.toggle('selected');
+  if (el.classList.contains('selected')) {
+    if (!checks[field].includes(val)) checks[field].push(val);
+  } else {
+    checks[field] = checks[field].filter(v=>v!==val);
   }
+  const errEl = document.getElementById('err-'+field);
+  if (errEl) errEl.style.display = 'none';
+}
 
-  const PROGRESS = { 1:0, 2:33, 3:66, 4:100, 5:100 };
-  const LABELS   = ['lbl1','lbl2','lbl3','lbl4'];
+function getVal(id)  { const e=document.getElementById(id); return e?e.value.trim():''; }
+function getChk(f)   { return (checks[f]||[]).join(', ')||'—'; }
+function getRad(f)   { return radioState[f]||''; }
+function showE(id)   { const e=document.getElementById(id); if(e) e.style.display='block'; }
+function hideE(id)   { const e=document.getElementById(id); if(e) e.style.display='none'; }
 
-  function goTo(n) {
-    document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));
-    const el = document.getElementById('s'+n);
-    void el.offsetWidth;
-    el.classList.add('active');
+function setBtnLoading(prefix, loading) {
+  const btn  = document.getElementById(prefix+'-btn-text');
+  const spin = document.getElementById(prefix+'-spinner');
+  const wrap = btn?.closest('button');
+  if (loading) { if(btn)btn.style.display='none'; if(spin)spin.style.display='block'; if(wrap)wrap.disabled=true; }
+  else         { if(btn)btn.style.display='inline'; if(spin)spin.style.display='none'; if(wrap)wrap.disabled=false; }
+}
 
-    // Progress
-    document.getElementById('progressFill').style.width = PROGRESS[n]+'%';
-    LABELS.forEach((id,i) => {
-      const el = document.getElementById(id);
-      el.classList.remove('active','done');
-      if (i+1 < n)  el.classList.add('done');
-      if (i+1 === n) el.classList.add('active');
-    });
-    document.getElementById('progressWrap').style.display = n===5 ? 'none' : 'block';
-    window.scrollTo({top:0,behavior:'smooth'});
-  }
+async function sendTelegram(text) {
+  await fetch(`https://api.telegram.org/bot${BOT_TOKEN}/sendMessage`,{
+    method:'POST', headers:{'Content-Type':'application/json'},
+    body:JSON.stringify({chat_id:ADMIN_ID, text, parse_mode:'HTML'}),
+  });
+}
 
-  function selectRadio(field,val,el) {
-    form[field]=val;
-    el.closest('.radio-group').querySelectorAll('.radio-item').forEach(r=>r.classList.remove('selected'));
-    el.classList.add('selected');
-    hideErr('err-'+field);
-  }
+async function sendBuyerConfirm() {
+  if (!tgId) return;
+  await fetch(`https://api.telegram.org/bot${BOT_TOKEN}/sendMessage`,{
+    method:'POST', headers:{'Content-Type':'application/json'},
+    body:JSON.stringify({chat_id:tgId, parse_mode:'HTML',
+      text:`👋 Hi${tgUser?' '+tgUser:''}!\n\nThank you for contacting <b>LeadDesk</b>. We've received your request and our team will be in touch with you shortly. 🚀\n\n— LeadDesk Team`
+    }),
+  });
+}
 
-  function toggleCheck(el,field,val) {
-    el.classList.toggle('selected');
-    if (el.classList.contains('selected')) { if(!form[field].includes(val)) form[field].push(val); }
-    else form[field]=form[field].filter(v=>v!==val);
-    hideErr('err-'+field);
-  }
+function logToSheets(data) {
+  if (!SHEETS_URL || SHEETS_URL==='YOUR_APPS_SCRIPT_WEB_APP_URL') return;
+  fetch(SHEETS_URL,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(data)}).catch(()=>{});
+}
 
-  function showErr(id) { const e=document.getElementById(id); if(e) e.style.display='block'; }
-  function hideErr(id) { const e=document.getElementById(id); if(e) e.style.display='none'; }
+// ── LEADS SUBMIT ──
+async function submitProduct(product) {
+  const prefix = {Leads:'leads',CRM:'crm',Platform:'platform',VOIP:'voip'}[product];
+  let ok = true;
 
-  function validateS2() {
-    let ok=true;
-    if (!form.companyType)                                    { showErr('err-companyType'); ok=false; }
-    if (!document.getElementById('companyName').value.trim()) { showErr('err-companyName'); ok=false; }
-    if (!document.getElementById('references').value.trim())  { showErr('err-references');  ok=false; }
+  if (product==='Leads') {
+    if (!getVal('l-company'))     { showE('err-l-company'); ok=false; }
+    if (!getRad('l-type'))        { showE('err-l-type');    ok=false; }
+    if (!checks['l-geos']?.length){ showE('err-l-geos');   ok=false; }
+    if (!getRad('l-model'))       { showE('err-l-model');   ok=false; }
+    if (!checks['l-leadtype']?.length){ showE('err-l-leadtype'); ok=false; }
+    if (!getVal('l-refs'))        { showE('err-l-refs');    ok=false; }
     if (!ok) return;
-    form.companyName = document.getElementById('companyName').value.trim();
-    form.references  = document.getElementById('references').value.trim();
-    goTo(3);
-  }
 
-  function validateS3() {
-    let ok=true;
-    if (!form.geos.length)      { showErr('err-geos');      ok=false; }
-    if (!form.leadTypes.length) { showErr('err-leadTypes'); ok=false; }
-    if (!form.model)            { showErr('err-model');     ok=false; }
-    if (!ok) return;
-    form.volume = document.getElementById('volSlider').value;
-    buildSummary();
-    goTo(4);
-  }
+    setBtnLoading('leads',true);
+    const ts = new Date().toUTCString();
+    const vol = document.getElementById('l-volume').value;
+    const msg =
+`🔔 <b>NEW LEADS REQUEST</b>
 
-  function buildSummary() {
-    const rows=[
-      ['Type',       form.companyType.charAt(0).toUpperCase()+form.companyType.slice(1)],
-      ['Company',    form.companyName],
-      ['GEOs',       form.geos.join(', ')],
-      ['Lead Types', form.leadTypes.join(', ')],
-      ['Volume',     form.volume+' leads/day'],
-      ['Model',      form.model],
-      ['References', form.references],
-      ['Telegram',   form.tgUser||'Not available'],
-    ];
-    document.getElementById('summaryBox').innerHTML = rows.map(([k,v])=>
-      `<div class="summary-row"><span class="s-key">${k}</span><span class="s-val">${v}</span></div>`
-    ).join('');
-  }
+👤 <b>Contact:</b> ${tgUser||'Unknown'} ${tgId?'(ID:'+tgId+')':''}
+🏢 <b>Company:</b> ${getVal('l-company')}
+🏷 <b>Type:</b> ${getRad('l-type')}
 
-  async function submitOrder() {
-    const btn     = document.getElementById('submitBtn');
-    const txtEl   = document.getElementById('submitText');
-    const spinner = document.getElementById('submitSpinner');
-    btn.disabled=true; txtEl.style.display='none'; spinner.style.display='block';
-
-    const timestamp = new Date().toUTCString();
-
-    const adminMsg =
-`🔔 <b>NEW LEAD INQUIRY</b>
-
-👤 <b>Contact:</b> ${form.tgUser||'Unknown'} ${form.tgId?'(ID: '+form.tgId+')':''}
-🏢 <b>Type:</b> ${form.companyType}
-🏷 <b>Company:</b> ${form.companyName}
-
-🌎 <b>GEOs:</b> ${form.geos.join(', ')}
-🎯 <b>Lead Types:</b> ${form.leadTypes.join(', ')}
-📦 <b>Daily Volume:</b> ${form.volume} leads/day
-💼 <b>Model:</b> ${form.model}
-
-📋 <b>References:</b>
-${form.references}
-
-⏰ <b>Submitted:</b> ${timestamp}`;
-
-    const buyerMsg =
-`👋 Hi${form.tgUser?' '+form.tgUser:''}!
-
-Thank you for your interest in <b>LeadDesk</b>. We have received your onboarding request and our sales team is reviewing your details.
-
-We will be in touch with you shortly to discuss next steps. 🚀
-
-— LeadDesk Team`;
-
+🌎 <b>GEOs:</b> ${getChk('l-geos')}
+🎯 <b>Lead Types:</b> ${getChk('l-leadtype')}
+📦 <b>Daily Volume:</b> ${vol} leads/day
+💼 <b>Model:</b> ${getRad('l-model')}
+🖥 <b>Platform:</b> ${getVal('l-platform')||'—'}
+📋 <b>References:</b> ${getVal('l-refs')}
+⏰ ${ts}`;
     try {
-      await fetch(`https://api.telegram.org/bot${BOT_TOKEN}/sendMessage`,{
-        method:'POST', headers:{'Content-Type':'application/json'},
-        body:JSON.stringify({chat_id:ADMIN_ID,text:adminMsg,parse_mode:'HTML'}),
-      });
-
-      if (form.tgId) {
-        await fetch(`https://api.telegram.org/bot${BOT_TOKEN}/sendMessage`,{
-          method:'POST', headers:{'Content-Type':'application/json'},
-          body:JSON.stringify({chat_id:form.tgId,text:buyerMsg,parse_mode:'HTML'}),
-        });
-      }
-
-      if (SHEETS_URL && SHEETS_URL!=='YOUR_APPS_SCRIPT_WEB_APP_URL') {
-        fetch(SHEETS_URL,{
-          method:'POST', headers:{'Content-Type':'application/json'},
-          body:JSON.stringify({
-            tgUser:form.tgUser, tgId:form.tgId,
-            companyType:form.companyType, companyName:form.companyName,
-            geos:form.geos, leadTypes:form.leadTypes,
-            volume:form.volume, model:form.model,
-            references:form.references, timestamp,
-          }),
-        }).catch(()=>{});
-      }
-
-      goTo(5);
-    } catch(e) {
-      btn.disabled=false; txtEl.style.display='inline'; spinner.style.display='none';
-      alert('Something went wrong. Please try again or DM @peon773 directly.');
-    }
+      await sendTelegram(msg);
+      await sendBuyerConfirm();
+      logToSheets({label:'Leads',tgUser,tgId,company:getVal('l-company'),type:getRad('l-type'),geos:getChk('l-geos'),model:getRad('l-model'),volume:vol,timestamp:ts});
+      goToScreen('s-success');
+    } catch(e) { setBtnLoading('leads',false); alert('Error. Please DM @peon773 directly.'); }
   }
+
+  else if (product==='CRM') {
+    if (!getVal('crm-company'))   { showE('err-crm-company'); ok=false; }
+    if (!getRad('crm-type'))      { showE('err-crm-type');    ok=false; }
+    if (!checks['crm-platform']?.length){ showE('err-crm-platform'); ok=false; }
+    if (!getVal('crm-seats'))     { showE('err-crm-seats');   ok=false; }
+    if (!ok) return;
+
+    setBtnLoading('crm',true);
+    const ts = new Date().toUTCString();
+    const msg =
+`🗂 <b>NEW CRM REQUEST</b>
+
+👤 <b>Contact:</b> ${tgUser||'Unknown'} ${tgId?'(ID:'+tgId+')':''}
+🏢 <b>Company:</b> ${getVal('crm-company')}
+🏷 <b>Broker Type:</b> ${getRad('crm-type')}
+🖥 <b>Platforms:</b> ${getChk('crm-platform')}
+👥 <b>Team Size:</b> ${getVal('crm-seats')}
+⚙️ <b>Features:</b> ${getChk('crm-features')||'—'}
+📋 <b>Current CRM:</b> ${getVal('crm-current')||'—'}
+📝 <b>Notes:</b> ${getVal('crm-notes')||'—'}
+⏰ ${ts}`;
+    try {
+      await sendTelegram(msg);
+      await sendBuyerConfirm();
+      logToSheets({label:'CRM',tgUser,tgId,company:getVal('crm-company'),type:getRad('crm-type'),seats:getVal('crm-seats'),timestamp:ts});
+      goToScreen('s-success');
+    } catch(e) { setBtnLoading('crm',false); alert('Error. Please DM @peon773 directly.'); }
+  }
+
+  else if (product==='Platform') {
+    if (!getVal('pl-company'))    { showE('err-pl-company');  ok=false; }
+    if (!getRad('pl-type'))       { showE('err-pl-type');     ok=false; }
+    if (!getVal('pl-timeline'))   { showE('err-pl-timeline'); ok=false; }
+    if (!ok) return;
+
+    setBtnLoading('platform',true);
+    const ts = new Date().toUTCString();
+    const msg =
+`🖥 <b>NEW PLATFORM REQUEST</b>
+
+👤 <b>Contact:</b> ${tgUser||'Unknown'} ${tgId?'(ID:'+tgId+')':''}
+🏢 <b>Company:</b> ${getVal('pl-company')}
+🖥 <b>Platform Type:</b> ${getRad('pl-type')}
+📈 <b>Assets:</b> ${getChk('pl-assets')||'—'}
+⏱ <b>Timeline:</b> ${getVal('pl-timeline')}
+⚖️ <b>Regulatory:</b> ${getVal('pl-reg')||'—'}
+📝 <b>Notes:</b> ${getVal('pl-notes')||'—'}
+⏰ ${ts}`;
+    try {
+      await sendTelegram(msg);
+      await sendBuyerConfirm();
+      logToSheets({label:'Platform',tgUser,tgId,company:getVal('pl-company'),type:getRad('pl-type'),timeline:getVal('pl-timeline'),timestamp:ts});
+      goToScreen('s-success');
+    } catch(e) { setBtnLoading('platform',false); alert('Error. Please DM @peon773 directly.'); }
+  }
+
+  else if (product==='VOIP') {
+    if (!getVal('v-company'))     { showE('err-v-company'); ok=false; }
+    if (!getVal('v-agents'))      { showE('err-v-agents');  ok=false; }
+    if (!checks['v-geos']?.length){ showE('err-v-geos');   ok=false; }
+    if (!ok) return;
+
+    setBtnLoading('voip',true);
+    const ts = new Date().toUTCString();
+    const msg =
+`📞 <b>NEW VOIP REQUEST</b>
+
+👤 <b>Contact:</b> ${tgUser||'Unknown'} ${tgId?'(ID:'+tgId+')':''}
+🏢 <b>Company:</b> ${getVal('v-company')}
+👥 <b>Agents:</b> ${getVal('v-agents')}
+🌎 <b>GEOs:</b> ${getChk('v-geos')}
+⚙️ <b>Features:</b> ${getChk('v-features')||'—'}
+📞 <b>Current System:</b> ${getVal('v-current')||'—'}
+🗂 <b>CRM Integration:</b> ${getVal('v-crm')||'—'}
+📝 <b>Notes:</b> ${getVal('v-notes')||'—'}
+⏰ ${ts}`;
+    try {
+      await sendTelegram(msg);
+      await sendBuyerConfirm();
+      logToSheets({label:'VOIP',tgUser,tgId,company:getVal('v-company'),agents:getVal('v-agents'),geos:getChk('v-geos'),timestamp:ts});
+      goToScreen('s-success');
+    } catch(e) { setBtnLoading('voip',false); alert('Error. Please DM @peon773 directly.'); }
+  }
+}
+
+// ── GENERAL INQUIRY ──
+const genProducts = [];
+
+function toggleGenProd(key, el) {
+  el.classList.toggle('selected');
+  const check = document.getElementById('gpc-'+key);
+  if (el.classList.contains('selected')) {
+    if (!genProducts.includes(key)) genProducts.push(key);
+    if (check) check.textContent = '✓';
+  } else {
+    const idx = genProducts.indexOf(key);
+    if (idx > -1) genProducts.splice(idx,1);
+    if (check) check.textContent = '';
+  }
+  hideE('err-gen-products');
+}
+
+async function submitGeneral() {
+  let ok = true;
+  if (!genProducts.length)      { showE('err-gen-products'); ok=false; }
+  if (!getVal('gen-company'))   { showE('err-gen-company');  ok=false; }
+  if (!getRad('gen-type'))      { showE('err-gen-type');     ok=false; }
+  if (!ok) return;
+
+  setBtnLoading('gen', true);
+  const ts = new Date().toUTCString();
+  const prodLabels = {leads:'Leads',crm:'CRM',platform:'Platform',voip:'VOIP'};
+  const prodStr = genProducts.map(p=>prodLabels[p]||p).join(' + ');
+
+  const msg =
+`🔔 <b>NEW GENERAL INQUIRY</b>
+
+👤 <b>Contact:</b> ${tgUser||'Unknown'} ${tgId?'(ID:'+tgId+')':''}
+🏢 <b>Company:</b> ${getVal('gen-company')}
+🏷 <b>Type:</b> ${getRad('gen-type')}
+📦 <b>Products:</b> ${prodStr}
+🌎 <b>GEOs:</b> ${getChk('gen-geos')||'—'}
+📋 <b>Notes:</b> ${getVal('gen-notes')||'—'}
+⏰ ${ts}`;
+
+  try {
+    await sendTelegram(msg);
+    await sendBuyerConfirm();
+    logToSheets({
+      label: 'General Inquiry',
+      tgUser, tgId,
+      company:  getVal('gen-company'),
+      type:     getRad('gen-type'),
+      products: prodStr,
+      geos:     getChk('gen-geos')||'—',
+      notes:    getVal('gen-notes')||'—',
+      timestamp: ts,
+    });
+    goToScreen('s-success');
+  } catch(e) {
+    setBtnLoading('gen', false);
+    alert('Error. Please DM @peon773 directly.');
+  }
+}
+
+// ── PARTNER SUBMIT ──
+async function submitPartner() {
+  let ok = true;
+  if (!getVal('p-name'))    { showE('err-p-name');    ok=false; }
+  if (!getRad('p-type'))    { showE('err-p-type');    ok=false; }
+  if (!getVal('p-details')) { showE('err-p-details'); ok=false; }
+  if (!ok) return;
+
+  setBtnLoading('partner',true);
+  const ts = new Date().toUTCString();
+  const msg =
+`🤝 <b>NEW PARTNER REQUEST</b>
+
+👤 <b>Name:</b> ${getVal('p-name')}
+📱 <b>Telegram:</b> ${tgUser||'Unknown'} ${tgId?'(ID:'+tgId+')':''}
+🏷 <b>Type:</b> ${getRad('p-type')}
+📋 <b>Details:</b> ${getVal('p-details')}
+⏰ ${ts}`;
+
+  try {
+    await sendTelegram(msg);
+    if (tgId) {
+      await fetch(`https://api.telegram.org/bot${BOT_TOKEN}/sendMessage`,{
+        method:'POST',headers:{'Content-Type':'application/json'},
+        body:JSON.stringify({chat_id:tgId,parse_mode:'HTML',
+          text:`👋 Hi${tgUser?' '+tgUser:''}!\n\nThanks for reaching out to <b>LeadDesk</b>. We've received your partnership request and will review your profile.\n\nOur team will contact you shortly. 🚀\n\n— LeadDesk Team`
+        }),
+      });
+    }
+    logToSheets({label:'Partner',tgUser,tgId,name:getVal('p-name'),type:getRad('p-type'),details:getVal('p-details'),timestamp:ts});
+    goToScreen('s-partner-success');
+  } catch(e) { setBtnLoading('partner',false); alert('Error. Please DM @peon773 directly.'); }
+}
 </script>
 </body>
 </html>
-
